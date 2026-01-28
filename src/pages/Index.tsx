@@ -1,10 +1,28 @@
 import Header from "@/components/Header";
 import ArticleCard from "@/components/ArticleCard";
+import BookCard from "@/components/BookCard";
 import HeroSection from "@/components/HeroSection";
 import IntroSection from "@/components/IntroSection";
 import { articles } from "@/data/articles";
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
+
+const books = [
+  {
+    id: "smart-budgeting",
+    title: "Smart Budgeting 50/30/20",
+    subtitle: "A plan for every kwacha.",
+    price: "Starting at K10+. Pay what you want.",
+    image: "/placeholder.svg",
+  },
+  {
+    id: "zambia-economics",
+    title: "Understanding Zambia's Economy",
+    subtitle: "A deep dive into economic realities.",
+    price: "Starting at K15+. Pay what you want.",
+    image: "/placeholder.svg",
+  },
+];
 
 const Index = () => {
   const featuredArticles = articles.slice(0, 2);
@@ -39,8 +57,8 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Featured Articles Grid */}
-        <section id="articles" className="py-12">
+        {/* Featured Books Section */}
+        <section id="books" className="py-12">
           <div className="flex items-center justify-between mb-6 animate-slide-up">
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Featured Books</h2>
             <a
@@ -51,10 +69,10 @@ const Index = () => {
             </a>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredArticles.map((article, index) => (
-              <div key={article.id} className={`animate-slide-up stagger-${Math.min(index + 1, 6)}`}>
-                <ArticleCard {...article} size="small" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {books.map((book, index) => (
+              <div key={book.id} className={`animate-slide-up stagger-${Math.min(index + 1, 6)}`}>
+                <BookCard {...book} />
               </div>
             ))}
           </div>
