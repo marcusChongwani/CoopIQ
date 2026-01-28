@@ -8,36 +8,36 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Warm, sophisticated palette inspired by the design */
-    --background: 36 44% 96%;
-    --foreground: 0 0% 18%;
+    /* Blue and white palette inspired by Depths of Zambia logo */
+    --background: 0 0% 100%;
+    --foreground: 215 80% 35%;
 
-    --card: 33 40% 94%;
-    --card-foreground: 0 0% 18%;
+    --card: 210 40% 98%;
+    --card-foreground: 215 80% 35%;
 
-    --popover: 36 44% 96%;
-    --popover-foreground: 0 0% 18%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 80% 35%;
 
-    --primary: 0 0% 18%;
-    --primary-foreground: 36 44% 96%;
+    --primary: 215 80% 45%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 25 30% 70%;
-    --secondary-foreground: 0 0% 18%;
+    --secondary: 210 40% 90%;
+    --secondary-foreground: 215 80% 35%;
 
-    --muted: 33 30% 88%;
-    --muted-foreground: 0 0% 40%;
+    --muted: 210 30% 95%;
+    --muted-foreground: 215 30% 45%;
 
-    --accent: 140 20% 50%;
-    --accent-foreground: 36 44% 96%;
+    --accent: 215 70% 55%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 36 44% 96%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 33 25% 85%;
-    --input: 33 25% 85%;
-    --ring: 0 0% 18%;
+    --border: 210 30% 88%;
+    --input: 210 30% 88%;
+    --ring: 215 80% 45%;
 
-    --radius: 1rem;
+    --radius: 0.5rem;
 
     /* Custom design tokens */
     --tag-financing: 210 50% 75%;
@@ -49,41 +49,41 @@ All colors MUST be HSL.
     --tag-growth: 50 45% 70%;
 
     /* Polish design tokens */
-    --cream: 40 40% 90%;
-    --cream-foreground: 0 0% 18%;
-    --surface-elevated: 36 44% 98%;
-    --shadow-soft: 0 0% 0%;
+    --cream: 210 40% 95%;
+    --cream-foreground: 215 80% 35%;
+    --surface-elevated: 0 0% 100%;
+    --shadow-soft: 215 50% 30%;
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .dark {
-    --background: 0 0% 10%;
-    --foreground: 36 44% 96%;
+    --background: 215 30% 12%;
+    --foreground: 210 40% 95%;
 
-    --card: 0 0% 14%;
-    --card-foreground: 36 44% 96%;
+    --card: 215 30% 16%;
+    --card-foreground: 210 40% 95%;
 
-    --popover: 0 0% 10%;
-    --popover-foreground: 36 44% 96%;
+    --popover: 215 30% 12%;
+    --popover-foreground: 210 40% 95%;
 
-    --primary: 36 44% 96%;
-    --primary-foreground: 0 0% 18%;
+    --primary: 215 70% 55%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 25 15% 30%;
-    --secondary-foreground: 36 44% 96%;
+    --secondary: 215 25% 25%;
+    --secondary-foreground: 210 40% 95%;
 
-    --muted: 0 0% 20%;
-    --muted-foreground: 0 0% 60%;
+    --muted: 215 25% 20%;
+    --muted-foreground: 210 20% 60%;
 
-    --accent: 140 20% 45%;
-    --accent-foreground: 36 44% 96%;
+    --accent: 215 60% 50%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62% 50%;
-    --destructive-foreground: 36 44% 96%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 36 44% 96%;
+    --border: 215 25% 22%;
+    --input: 215 25% 22%;
+    --ring: 215 70% 55%;
 
     /* Dark mode tag colors */
     --tag-financing: 210 40% 45%;
@@ -95,10 +95,10 @@ All colors MUST be HSL.
     --tag-growth: 50 40% 45%;
 
     /* Dark mode polish tokens */
-    --cream: 40 20% 25%;
-    --cream-foreground: 36 44% 96%;
-    --surface-elevated: 0 0% 16%;
-    --shadow-soft: 0 0% 0%;
+    --cream: 215 30% 20%;
+    --cream-foreground: 210 40% 95%;
+    --surface-elevated: 215 30% 18%;
+    --shadow-soft: 215 50% 10%;
   }
 }
 
