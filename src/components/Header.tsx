@@ -23,27 +23,29 @@ const Header = () => {
             <a href="/" className="text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all">
               Home
             </a>
-            <a href="/#articles" className="text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all">
-              Articles
+            <a href="/videos" className="text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all">
+              Videos
+            </a>
+            <a href="/books" className="text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all">
+              Books
+            </a>
+            <a href="/donate" className="text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all">
+              Advertise
             </a>
             <a href="/contact" className="text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all">
               Contact
             </a>
-            <a href="/donate" className="text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all">
-            Donate
-            </a>
-            <a href="/about" className="text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all">
-              About
-            </a>
-            
+
           </nav>
 
           {/* Actions */}
           <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
-            
-            <Button className="hidden md:flex bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8 py-2 hover:scale-105 transition-all">
-              Join Now
-            </Button>
+
+          <a href="/donate">
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full w-full">
+                  Donate
+                </Button>
+              </a>
 
             {/* Mobile Menu Button */}
             <button
@@ -60,24 +62,27 @@ const Header = () => {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-border animate-fade-in">
             <nav className="flex flex-col gap-4">
-              <a href="/" className="text-sm font-medium hover:text-accent transition-colors">
+              <a href="/" className="text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all">
                 Home
               </a>
-              <a href="/#articles" className="text-sm font-medium hover:text-accent transition-colors">
-                Articles
+              <a href="/videos" className="text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all">
+                Videos
               </a>
-              <a href="/wellness" className="text-sm font-medium hover:text-accent transition-colors">
-                Wellness
+              <a href="/books" className="text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all">
+                Books
               </a>
-              <a href="/travel" className="text-sm font-medium hover:text-accent transition-colors">
-                Travel
+              <a href="/donate" className="text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all">
+                Advertise
               </a>
-              <a href="/about" className="text-sm font-medium hover:text-accent transition-colors">
-                About
+              <a href="/contact" className="text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all">
+                Contact
               </a>
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full w-full">
-                Join Now
-              </Button>
+
+              <a href="/donate">
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full w-full">
+                  Donate
+                </Button>
+              </a>
             </nav>
           </div>
         )}
