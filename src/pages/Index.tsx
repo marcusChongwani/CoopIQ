@@ -6,25 +6,21 @@ import IntroSection from "@/components/IntroSection";
 import { articles } from "@/data/articles";
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
-
-const books = [
-  {
-    id: "smart-budgeting",
-    title: "Smart Budgeting 50/30/20",
-    subtitle: "A plan for every kwacha.",
-    price: "Starting at K10+. Pay what you want.",
-    image: "/placeholder.svg",
-  },
-  {
-    id: "zambia-economics",
-    title: "Understanding Zambia's Economy",
-    subtitle: "A deep dive into economic realities.",
-    price: "Starting at K15+. Pay what you want.",
-    image: "/placeholder.svg",
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
+  const { data: books = [] } = useQuery({
+    queryKey: ["books"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("books")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
   const featuredArticles = articles.slice(0, 2);
 
   return (
@@ -72,7 +68,13 @@ const Index = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {books.map((book, index) => (
               <div key={book.id} className={`animate-slide-up stagger-${Math.min(index + 1, 6)}`}>
-                <BookCard {...book} />
+                <BookCard
+                  slug={book.slug}
+                  title={book.title}
+                  subtitle={book.subtitle || ""}
+                  price={`Starting at K${Number(book.price).toFixed(0)}+`}
+                  image={book.cover_image || "/placeholder.svg"}
+                />
               </div>
             ))}
           </div>

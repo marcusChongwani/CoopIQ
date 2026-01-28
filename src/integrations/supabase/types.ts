@@ -14,7 +14,98 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      book_purchases: {
+        Row: {
+          amount: number
+          book_id: string
+          buyer_email: string
+          buyer_phone: string
+          created_at: string
+          download_count: number | null
+          download_token: string | null
+          id: string
+          payment_method: string
+          status: string
+          transaction_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          book_id: string
+          buyer_email: string
+          buyer_phone: string
+          created_at?: string
+          download_count?: number | null
+          download_token?: string | null
+          id?: string
+          payment_method: string
+          status?: string
+          transaction_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          book_id?: string
+          buyer_email?: string
+          buyer_phone?: string
+          created_at?: string
+          download_count?: number | null
+          download_token?: string | null
+          id?: string
+          payment_method?: string
+          status?: string
+          transaction_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "book_purchases_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      books: {
+        Row: {
+          cover_image: string | null
+          created_at: string
+          description: string | null
+          file_path: string | null
+          id: string
+          price: number
+          slug: string
+          subtitle: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          cover_image?: string | null
+          created_at?: string
+          description?: string | null
+          file_path?: string | null
+          id?: string
+          price?: number
+          slug: string
+          subtitle?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          cover_image?: string | null
+          created_at?: string
+          description?: string | null
+          file_path?: string | null
+          id?: string
+          price?: number
+          slug?: string
+          subtitle?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

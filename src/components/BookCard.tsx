@@ -1,8 +1,9 @@
 import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 interface BookCardProps {
-  id: string;
+  slug: string;
   title: string;
   subtitle: string;
   price: string;
@@ -11,7 +12,7 @@ interface BookCardProps {
 }
 
 const BookCard = ({
-  id,
+  slug,
   title,
   subtitle,
   price,
@@ -19,13 +20,13 @@ const BookCard = ({
   buttonText = "Get the Book",
 }: BookCardProps) => {
   return (
-    <div className="flex  sm:flex-row gap-6 bg-background  rounded-lg">
+    <div className="flex sm:flex-row gap-6 bg-background rounded-lg">
       {/* Book Cover */}
       <div className="flex-shrink-0 w-40">
         <img
           src={image}
           alt={title}
-          className="w-full h-auto rounded "
+          className="w-full h-auto rounded"
         />
       </div>
 
@@ -35,12 +36,13 @@ const BookCard = ({
           {title}
         </h3>
         <p className="text-muted-foreground line-clamp-1">{subtitle}</p>
-        <a href={`/book/${id}`}>
+        <p className="text-sm text-muted-foreground">{price}</p>
+        <Link to={`/book/${slug}`}>
           <Button className="rounded-md bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-5 mt-2 w-fit">
             {buttonText}
             <ChevronRight className="w-4 h-4 ml-1" />
           </Button>
-        </a>
+        </Link>
       </div>
     </div>
   );
