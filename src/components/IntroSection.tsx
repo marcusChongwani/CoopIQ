@@ -1,15 +1,23 @@
+import { Play } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
 const IntroSection = () => {
   return (
-    <section className="max-w-4xl mx-auto py-12 md:py-16 px-4 animate-fade-in">
-      <div className="text-center space-y-6">
-        <h2 className="text-3xl md:text-4xl font-bold leading-tight animate-slide-up">
-          Perspective is a space for exploring ideas, finding inspiration, and discovering new ways of seeing the world.
-        </h2>
-        <p className="text-lg text-muted-foreground leading-relaxed max-w-3xl mx-auto animate-slide-up stagger-1">
-          From mindful living and personal growth to travel experiences and creative pursuits, 
-          we share perspectives that enrich daily life. Join us as we explore topics that inspire 
-          curiosity and meaningful conversation.
-        </p>
+    <section className="max-w-3xl mx-auto py-16 md:py-24 px-4 animate-fade-in text-center">
+      <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight text-foreground mb-6 animate-slide-up">
+        Explaining Zambia<br />beyond the headlines.
+      </h1>
+      <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-10 animate-slide-up stagger-1">
+        Independent videos and books breaking down Zambia's economy, history, and everyday realities.
+      </p>
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-slide-up stagger-2">
+        <Button className="rounded-full px-8 py-6 text-base font-medium">
+          <Play className="w-4 h-4 mr-2" />
+          Watch Videos
+        </Button>
+        <Button variant="outline" className="rounded-full px-8 py-6 text-base font-medium">
+          Explore Books
+        </Button>
       </div>
     </section>
   );
