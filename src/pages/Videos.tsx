@@ -1,54 +1,17 @@
 import { useState } from "react";
 import Header from "@/components/Header";
-import VideoCard from "@/components/VideoCard";
+import ArticleCard from "@/components/ArticleCard";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
-// Placeholder video data - replace with actual data from database
-const PLACEHOLDER_VIDEOS = [
-  {
-    id: "1",
-    title: "Understanding Zambia's Economy",
-    description: "A deep dive into the economic landscape of Zambia and what drives growth.",
-    thumbnail: "/placeholder.svg",
-    duration: "12:34",
-    url: "#",
-  },
-  {
-    id: "2",
-    title: "The History of the Kwacha",
-    description: "Tracing the journey of Zambia's currency from independence to today.",
-    thumbnail: "/placeholder.svg",
-    duration: "8:45",
-    url: "#",
-  },
-  {
-    id: "3",
-    title: "Copper Mining in Zambia",
-    description: "Exploring the copper belt and its significance to the nation's economy.",
-    thumbnail: "/placeholder.svg",
-    duration: "15:20",
-    url: "#",
-  },
-  {
-    id: "4",
-    title: "Zambian Agriculture Explained",
-    description: "Understanding the role of farming in Zambia's economic development.",
-    thumbnail: "/placeholder.svg",
-    duration: "10:15",
-    url: "#",
-  },
-];
+import { articles } from "@/data/articles";
 
 const ITEMS_PER_PAGE = 6;
 
 const Videos = () => {
   const [page, setPage] = useState(1);
 
-  // For now, use placeholder data
-  const videos = PLACEHOLDER_VIDEOS;
-  const totalPages = Math.ceil(videos.length / ITEMS_PER_PAGE);
-  const paginatedVideos = videos.slice(
+  const totalPages = Math.ceil(articles.length / ITEMS_PER_PAGE);
+  const paginatedVideos = articles.slice(
     (page - 1) * ITEMS_PER_PAGE,
     page * ITEMS_PER_PAGE
   );
@@ -73,15 +36,17 @@ const Videos = () => {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              {paginatedVideos.map((video) => (
-                <VideoCard
-                  key={video.id}
-                  title={video.title}
-                  description={video.description}
-                  thumbnail={video.thumbnail}
-                  duration={video.duration}
-                  url={video.url}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+              {paginatedVideos.map((article) => (
+                <ArticleCard
+                  key={article.id}
+                  id={article.id}
+                  title={article.title}
+                  category={article.category}
+                  date={article.date}
+                  image={article.image}
+                  subtitle={article.subtitle}
+                  size="small"
                 />
               ))}
             </div>
