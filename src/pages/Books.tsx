@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
 import Header from "@/components/Header";
+import BookCard from "@/components/BookCard";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -45,9 +45,9 @@ const Books = () => {
         </div>
 
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="animate-pulse bg-muted rounded-2xl h-48" />
+          <div className="space-y-6">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="animate-pulse bg-muted rounded-lg h-40" />
             ))}
           </div>
         ) : data?.books.length === 0 ? (
@@ -56,49 +56,16 @@ const Books = () => {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div className="space-y-6 mb-8">
               {data?.books.map((book) => (
-                <Link
+                <BookCard
                   key={book.id}
-                  to={`/book/${book.slug}`}
-                  className="group flex gap-4 p-4 rounded-2xl border border-border bg-card hover:shadow-md transition-shadow"
-                >
-                  <div className="h-32 w-24 rounded-xl overflow-hidden bg-muted shrink-0">
-                    {book.cover_image ? (
-                      <img
-                        src={book.cover_image}
-                        alt={book.title}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="h-full w-full grid place-items-center text-xs text-muted-foreground">
-                        No cover
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex flex-col justify-between flex-1 min-w-0">
-                    <div>
-                      <h3 className="font-semibold text-lg leading-snug truncate group-hover:text-primary transition-colors">
-                        {book.title}
-                      </h3>
-                      {book.subtitle && (
-                        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                          {book.subtitle}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="flex items-center justify-between mt-3">
-                      <span className="text-sm font-medium">
-                        K{Number(book.price).toFixed(0)}
-                      </span>
-                      <span className="text-sm text-primary flex items-center gap-1 group-hover:gap-2 transition-all">
-                        View <ArrowRight className="w-4 h-4" />
-                      </span>
-                    </div>
-                  </div>
-                </Link>
+                  slug={book.slug}
+                  title={book.title}
+                  subtitle={book.subtitle || ""}
+                  price={`K${Number(book.price).toFixed(0)}`}
+                  image={book.cover_image || "/placeholder.svg"}
+                />
               ))}
             </div>
 
