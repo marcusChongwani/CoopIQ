@@ -1,7 +1,8 @@
 import { useState } from "react";
 import Header from "@/components/Header";
+import VideoCard from "@/components/VideoCard";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Play, ExternalLink } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 // Placeholder video data - replace with actual data from database
 const PLACEHOLDER_VIDEOS = [
@@ -74,39 +75,14 @@ const Videos = () => {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               {paginatedVideos.map((video) => (
-                <a
+                <VideoCard
                   key={video.id}
-                  href={video.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group flex flex-col rounded-2xl border border-border bg-card overflow-hidden hover:shadow-md transition-shadow"
-                >
-                  <div className="relative aspect-video bg-muted">
-                    <img
-                      src={video.thumbnail}
-                      alt={video.title}
-                      className="h-full w-full object-cover"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
-                      <div className="h-14 w-14 rounded-full bg-white/90 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Play className="w-6 h-6 text-foreground fill-foreground ml-1" />
-                      </div>
-                    </div>
-                    <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-2 py-1 rounded">
-                      {video.duration}
-                    </div>
-                  </div>
-
-                  <div className="p-4">
-                    <h3 className="font-semibold text-lg leading-snug group-hover:text-primary transition-colors flex items-start gap-2">
-                      {video.title}
-                      <ExternalLink className="w-4 h-4 mt-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </h3>
-                    <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
-                      {video.description}
-                    </p>
-                  </div>
-                </a>
+                  title={video.title}
+                  description={video.description}
+                  thumbnail={video.thumbnail}
+                  duration={video.duration}
+                  url={video.url}
+                />
               ))}
             </div>
 
