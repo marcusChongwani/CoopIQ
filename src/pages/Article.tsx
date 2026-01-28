@@ -65,9 +65,7 @@ const Article = () => {
             <div className="flex items-center gap-3 mb-6">
               
               <span className="text-sm text-muted-foreground">{article.date}</span>
-              <span className="text-sm text-muted-foreground">•</span>
-              <span className="text-sm text-muted-foreground">{article.readTime} read</span>
-            </div>
+                  </div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
               {article.title}

@@ -26,15 +26,16 @@ const Header = () => {
             <a href="/#articles" className="text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all">
               Articles
             </a>
-            <a href="/wellness" className="text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all">
-              Wellness
+            <a href="/contact" className="text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all">
+              Contact
             </a>
-            <a href="/travel" className="text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all">
-              Travel
+            <a href="/donate" className="text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all">
+            Donate
             </a>
             <a href="/about" className="text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all">
               About
             </a>
+            
           </nav>
 
           {/* Actions */}

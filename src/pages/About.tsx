@@ -11,7 +11,7 @@ const About = () => {
         {/* Hero Section */}
         <div className="mb-16 text-center space-y-6">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight animate-slide-down">
-            About Perspective
+            About Depths of Zambia
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed animate-slide-up stagger-1">
             A space for exploring ideas, finding inspiration, and discovering new ways of seeing the world.

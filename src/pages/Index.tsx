@@ -109,26 +109,28 @@ const Index = () => {
             <div>
               <h3 className="font-semibold mb-4">Explore</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
+                
                 <li>
-                  <a href="/wellness" className="hover:text-accent transition-colors">
-                    Wellness
+                  <a href="/contact" className="hover:text-accent transition-colors">
+                    Contact
                   </a>
                 </li>
                 <li>
-                  <a href="/travel" className="hover:text-accent transition-colors">
-                    Travel
+                  <a href="/donate" className="hover:text-accent transition-colors">
+                    Donate
                   </a>
                 </li>
                 <li>
-                  <a href="/creativity" className="hover:text-accent transition-colors">
-                    Creativity
+                  <a href="/donate" className="hover:text-accent transition-colors">
+                    Advertise with us
                   </a>
                 </li>
                 <li>
-                  <a href="/growth" className="hover:text-accent transition-colors">
-                    Growth
+                  <a href="/donate" className="hover:text-accent transition-colors">
+                    How we make money
                   </a>
                 </li>
+               
               </ul>
             </div>
             <div>
@@ -139,11 +141,7 @@ const Index = () => {
                     Our Story
                   </a>
                 </li>
-                <li>
-                  <a href="/authors" className="hover:text-accent transition-colors">
-                    Authors
-                  </a>
-                </li>
+                
                 <li>
                   <a href="/contact" className="hover:text-accent transition-colors">
                     Contact
@@ -151,21 +149,7 @@ const Index = () => {
                 </li>
               </ul>
             </div>
-            <div>
-              <h3 className="font-semibold mb-4">Resources</h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>
-                  <a href="/style-guide" className="hover:text-accent transition-colors">
-                    Style Guide
-                  </a>
-                </li>
-                <li>
-                  <a href="/#newsletter" className="hover:text-accent transition-colors">
-                    Newsletter
-                  </a>
-                </li>
-              </ul>
-            </div>
+           
             <div>
               <h3 className="font-semibold mb-4">Legal</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
