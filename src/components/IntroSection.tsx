@@ -3,21 +3,19 @@ import { Button } from "@/components/ui/button";
 
 const IntroSection = () => {
   return (
-    <section className="max-w-3xl mx-auto py-16 md:py-24 px-4 animate-fade-in text-center md:text-left">
+    <section className="max-w-3xl mx-auto py-16 md:py-24 px-4 animate-fade-in text-center">
       <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight text-foreground mb-6 animate-slide-up">
-        Explaining Zambia
-        <br />
-        beyond the headlines.
+        Explaining Zambia<br />beyond the headlines.
       </h1>
       <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-10 animate-slide-up stagger-1">
         Independent videos and books breaking down Zambia's economy, history, and everyday realities.
       </p>
-      <div className="flex flex-col sm:flex-row items-center justify-center md:items-start gap-4 animate-slide-up stagger-2">
-        <Button className="rounded-md px-8 py-6 text-base font-medium">
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-slide-up stagger-2">
+        <Button className="rounded-full px-8 py-6 text-base font-medium">
           <Play className="w-4 h-4 mr-2" />
           Watch Videos
         </Button>
-        <Button variant="outline" className="rounded-md px-8 py-6 text-base font-medium">
+        <Button variant="outline" className="rounded-full px-8 py-6 text-base font-medium">
           Explore Books
         </Button>
       </div>
