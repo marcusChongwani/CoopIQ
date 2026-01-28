@@ -39,7 +39,7 @@ const Header = () => {
           <div className="flex items-center min-w-0">
             <a href="/" className="flex items-center gap-2 sm:gap-3">
               <img src={logo} alt="Depths of Zambia" className="h-8 sm:h-10 w-auto" />
-              <span className="text-base sm:text-xl font-bold font-serif text-primary truncate">Depths of Zambia</span>
+              <span className="text-base sm:text-xl font-bold font-serif text-primary hidden md:block truncate">Depths of Zambia</span>
             </a>
           </div>
 
