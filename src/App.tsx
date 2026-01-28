@@ -8,6 +8,9 @@ import Article from "./pages/Article";
 import BookDetail from "./pages/BookDetail";
 import BookPayment from "./pages/BookPayment";
 import BookDownload from "./pages/BookDownload";
+import Books from "./pages/Books";
+import Videos from "./pages/Videos";
+import Donate from "./pages/Donate";
 import Wellness from "./pages/Wellness";
 import Travel from "./pages/Travel";
 import Creativity from "./pages/Creativity";
@@ -34,6 +37,9 @@ const App = () => (
           <Route path="/book/:slug" element={<BookDetail />} />
           <Route path="/book/:slug/payment" element={<BookPayment />} />
           <Route path="/download/:token" element={<BookDownload />} />
+          <Route path="/books" element={<Books />} />
+          <Route path="/videos" element={<Videos />} />
+          <Route path="/donate" element={<Donate />} />
           <Route path="/wellness" element={<Wellness />} />
           <Route path="/travel" element={<Travel />} />
           <Route path="/creativity" element={<Creativity />} />
