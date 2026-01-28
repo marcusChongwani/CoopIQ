@@ -4,6 +4,7 @@ import BookCard from "@/components/BookCard";
 import HeroSection from "@/components/HeroSection";
 import IntroSection from "@/components/IntroSection";
 import MissionSection from "@/components/MissionSection";
+import DonationSection from "@/components/DonationSection";
 import { articles } from "@/data/articles";
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
@@ -83,6 +84,9 @@ const Index = () => {
 
         {/* Mission Section */}
         <MissionSection />
+
+        {/* Donation Section */}
+        <DonationSection />
 
         {/* Newsletter Section */}
         <section className="my-20 rounded-[2.5rem] bg-card p-12 md:p-16 text-center animate-scale-in">
