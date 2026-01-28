@@ -36,7 +36,7 @@ const BookCard = ({
           {title}
         </h3>
         <p className="text-muted-foreground line-clamp-1">{subtitle}</p>
-        <p className="text-sm text-muted-foreground">{price}</p>
+       
         <Link to={`/book/${slug}`}>
           <Button className="rounded-md bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-5 mt-2 w-fit">
             {buttonText}

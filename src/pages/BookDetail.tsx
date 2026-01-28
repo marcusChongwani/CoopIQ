@@ -39,7 +39,7 @@ const BookDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background animate-fade-in">
+    <div className=" bg-background animate-fade-in">
       <Header />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -61,7 +61,7 @@ const BookDetail = () => {
             <img
               src={book.cover_image || "/placeholder.svg"}
               alt={book.title}
-              className="w-full max-w-sm rounded-lg shadow-lg"
+              className="w-full max-w-sm object-cover rounded-md "
             />
           </div>
 
@@ -71,9 +71,13 @@ const BookDetail = () => {
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-3">
                 {book.title}
               </h1>
-              {book.subtitle && (
-                <p className="text-xl text-muted-foreground">{book.subtitle}</p>
-              )}
+              {book.description && (
+              <div className="prose prose-lg max-w-none">
+                <p className="text-muted-foreground leading-relaxed">
+                  {book.description}
+                </p>
+              </div>
+            )}
             </div>
 
             <div className="py-4 border-y border-border">
@@ -85,41 +89,39 @@ const BookDetail = () => {
               </p>
             </div>
 
-            {book.description && (
-              <div className="prose prose-lg max-w-none">
-                <p className="text-muted-foreground leading-relaxed">
-                  {book.description}
-                </p>
-              </div>
-            )}
+            
 
-            <div className="pt-4">
-              <Link to={`/book/${slug}/payment`}>
-                <Button
-                  size="lg"
-                  className="w-full sm:w-auto rounded-full px-8 py-6 text-lg font-medium"
-                >
-                  <ShoppingCart className="w-5 h-5 mr-2" />
-                  Buy Now - K{Number(book.price).toFixed(2)}
-                </Button>
-              </Link>
+            {/* Floating Buy Button for mobile, static for larger screens */}
+            <div className="pt-4 relative">
+              {/* Floating on mobile screens */}
+              <div className="block lg:hidden">
+                <div className="fixed bottom-0 left-0 w-full z-40  px-4 py-4">
+                  <Link to={`/book/${slug}/payment`}>
+                    <Button
+                      size="lg"
+                      className="w-full rounded-full px-8 py-6 text-lg font-medium"
+                    >
+                      <ShoppingCart className="w-5 h-5 mr-2" />
+                      Buy Now - K{Number(book.price).toFixed(2)}
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+              {/* Maintained/static on desktop */}
+              <div className="hidden lg:block">
+                <Link to={`/book/${slug}/payment`}>
+                  <Button
+                    size="lg"
+                    className="w-full sm:w-auto rounded-full px-8 py-6 text-lg font-medium"
+                  >
+                    <ShoppingCart className="w-5 h-5 mr-2" />
+                    Buy Now - K{Number(book.price).toFixed(2)}
+                  </Button>
+                </Link>
+              </div>
             </div>
 
-            {/* Features */}
-            <div className="pt-6 space-y-3">
-              <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                <span className="w-2 h-2 rounded-full bg-primary"></span>
-                Instant PDF download after payment
-              </div>
-              <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                <span className="w-2 h-2 rounded-full bg-primary"></span>
-                Pay via MTN or Airtel Mobile Money
-              </div>
-              <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                <span className="w-2 h-2 rounded-full bg-primary"></span>
-                Lifetime access to updates
-              </div>
-            </div>
+            
           </div>
         </div>
       </main>
