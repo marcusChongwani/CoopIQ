@@ -68,11 +68,12 @@ Deno.serve(async (req) => {
       }
 
       // Create pending purchase record
+      // Note: payment_method defaults to "mtn" - will be updated by webhook with actual provider
       const { error: insertError } = await supabase.from("book_purchases").insert({
         book_id: bookId,
         buyer_email: email,
         buyer_phone: phone || "",
-        payment_method: "mobile-money",
+        payment_method: "mtn",
         amount: Number(amount),
         transaction_id: reference,
         status: "pending",
