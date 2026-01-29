@@ -115,7 +115,20 @@ Deno.serve(async (req) => {
     }
 
     const lencoReference = lencoData.data?.lencoReference || lencoData.data?.id;
-    const paymentStatus = lencoData.data?.status || "pending";
+    const lencoStatus = lencoData.data?.status || "pending";
+    
+    // Map Lenco statuses to our internal statuses (pending, completed, failed)
+    const statusMap: Record<string, string> = {
+      "successful": "completed",
+      "completed": "completed",
+      "pending": "pending",
+      "pay-offline": "pending", // User needs to complete payment on phone
+      "processing": "pending",
+      "failed": "failed",
+      "cancelled": "failed",
+      "expired": "failed",
+    };
+    const paymentStatus = statusMap[lencoStatus] || "pending";
 
     if (type === "donation") {
       // Create donation record
