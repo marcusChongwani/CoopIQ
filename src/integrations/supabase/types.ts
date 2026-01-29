@@ -24,6 +24,7 @@ export type Database = {
           download_count: number | null
           download_token: string | null
           id: string
+          is_verified: boolean
           lenco_reference: string | null
           payment_method: string
           status: string
@@ -39,6 +40,7 @@ export type Database = {
           download_count?: number | null
           download_token?: string | null
           id?: string
+          is_verified?: boolean
           lenco_reference?: string | null
           payment_method: string
           status?: string
@@ -54,6 +56,7 @@ export type Database = {
           download_count?: number | null
           download_token?: string | null
           id?: string
+          is_verified?: boolean
           lenco_reference?: string | null
           payment_method?: string
           status?: string
@@ -121,6 +124,7 @@ export type Database = {
           donor_name: string | null
           donor_phone: string
           id: string
+          is_verified: boolean
           lenco_reference: string | null
           payment_method: string
           status: string
@@ -135,6 +139,7 @@ export type Database = {
           donor_name?: string | null
           donor_phone: string
           id?: string
+          is_verified?: boolean
           lenco_reference?: string | null
           payment_method: string
           status?: string
@@ -149,6 +154,7 @@ export type Database = {
           donor_name?: string | null
           donor_phone?: string
           id?: string
+          is_verified?: boolean
           lenco_reference?: string | null
           payment_method?: string
           status?: string

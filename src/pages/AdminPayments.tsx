@@ -69,6 +69,7 @@ function DonationsTab() {
       const { data, error } = await supabase
         .from("donations")
         .select("*")
+        .eq("is_verified", true)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data as Donation[];
@@ -162,6 +163,7 @@ function BookPaymentsTab() {
       const { data, error } = await supabase
         .from("book_purchases")
         .select("*, book:books(title)")
+        .eq("is_verified", true)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data as BookPurchase[];
@@ -245,11 +247,11 @@ export default function AdminPayments() {
         supabase
           .from("donations")
           .select("amount, status")
-          .eq("status", "successful"),
+          .eq("is_verified", true),
         supabase
           .from("book_purchases")
           .select("amount, status")
-          .eq("status", "completed"),
+          .eq("is_verified", true),
       ]);
 
       const donationsTotal = (donationsRes.data || []).reduce(
