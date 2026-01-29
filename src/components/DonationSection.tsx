@@ -35,7 +35,7 @@ const DonationSection = () => {
             <Link
               key={item.amount}
               to="/donate"
-              className="bg-white hover:bg-gray-100 transition-colors rounded-lg py-6 text-center font-bold text-lg text-foreground"
+              className="bg-white hover:bg-gray-100 transition-colors rounded-full py-3 text-center font-bold text-lg text-foreground"
             >
               {item.amount}
             </Link>

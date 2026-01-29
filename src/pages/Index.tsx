@@ -96,17 +96,20 @@ const Index = () => {
             On Zambia's economy, history and everyday realities.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-start sm:justify-center gap-3 sm:gap-4 animate-slide-up stagger-2">
+              <a href="/videos" className="w-full">
               <Button className="rounded-full  w-full px-6 sm:px-8 py-6 text-base font-medium">
                 <Play className="w-4 h-4 mr-2" />
                 Watch Videos
               </Button>
-
+              </a>
+              <a href="/books" className="w-full">
               <Button
                 variant="outline"
                 className="rounded-full  w-full px-6 sm:px-8 py-6 text-base font-medium"
               >
                 Explore Books
               </Button>
+              </a>
             </div>
           </div>
         </section>
