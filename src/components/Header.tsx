@@ -42,7 +42,7 @@ const Header = () => {
         <div className="flex items-center justify-between h-14 sm:h-16 pill-nav px-4 sm:px-6">
           {/* Logo */}
           <div className="flex items-center min-w-0 gap-3">
-            <Link to={isAdmin ? "/admin" : "/"} className="flex items-center gap-2 sm:gap-3">
+            <Link to={isAdmin ? "/" : "/"} className="flex items-center gap-2 sm:gap-3">
               <img src={logo} alt="Depths of Zambia" className="h-8 sm:h-10 w-auto" />
               <span className="text-base sm:text-xl font-bold font-serif text-primary hidden md:block truncate">
                 Depths of Zambia
