@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
@@ -17,32 +17,12 @@ import {
 
 type DonationStatusType = "pending" | "completed" | "failed";
 
-type DonationMeta =
-  | {
-      type: "donation";
-      email: string;
-      amount: number;
-      donorName?: string;
-      donorMessage?: string;
-    }
-  | null;
-
 const DonationStatus = () => {
   const { transactionId } = useParams<{ transactionId: string }>();
   const [pollCount, setPollCount] = useState(0);
   const verifyAttemptedRef = useRef(false);
 
-  const donationMeta: DonationMeta = useMemo(() => {
-    if (!transactionId) return null;
-    try {
-      const raw = sessionStorage.getItem(`payment_meta_${transactionId}`);
-      return raw ? (JSON.parse(raw) as DonationMeta) : null;
-    } catch {
-      return null;
-    }
-  }, [transactionId]);
-
-  // Poll for donation status every 5 seconds
+  // Poll for donation status every 3 seconds
   const { data: donation, isLoading, refetch, dataUpdatedAt } = useQuery({
     queryKey: ["donation-status", transactionId],
     queryFn: async () => {
@@ -57,64 +37,57 @@ const DonationStatus = () => {
     },
     enabled: !!transactionId,
     refetchInterval: (query) => {
-      // Stop polling if completed or failed, or after 60 polls (5 minutes)
       const status = query.state.data?.status as DonationStatusType;
-      if (status === "completed" || status === "failed" || pollCount >= 60) {
+      // Stop polling if completed/failed or after 100 polls (~5 minutes)
+      if (status === "completed" || status === "failed" || pollCount >= 100) {
         return false;
       }
-      return 5000; // Poll every 5 seconds
+      return 3000; // Poll every 3 seconds
     },
   });
 
+  // Track poll count
   useEffect(() => {
-    // Count every poll tick (even if the row doesn't exist yet) so we can time out gracefully.
-    if (!transactionId) return;
-    if (!dataUpdatedAt) return;
-    setPollCount((prev) => prev + 1);
+    if (!transactionId || !dataUpdatedAt) return;
+    setPollCount((p) => p + 1);
   }, [dataUpdatedAt, transactionId]);
 
+  // Trigger verification once when status page loads and record exists
   useEffect(() => {
     if (!transactionId) return;
     if (verifyAttemptedRef.current) return;
-    if (!donationMeta || donationMeta.type !== "donation") return;
-    if (!donationMeta.email) return;
-    if (donation?.status === "completed" || donation?.status === "failed") return;
+    if (!donation) return; // Wait for record to exist
+    if (donation.status === "completed" || donation.status === "failed") return;
 
     verifyAttemptedRef.current = true;
 
+    console.log("Triggering donation verification for:", transactionId);
     supabase.functions
       .invoke("verify-lenco-payment", {
         body: {
           reference: transactionId,
           type: "donation",
-          email: donationMeta.email,
-          amount: donationMeta.amount,
-          donorName: donationMeta.donorName,
-          donorMessage: donationMeta.donorMessage,
+          email: donation.donor_email,
+          amount: donation.amount,
+          donorName: donation.donor_name,
+          donorMessage: donation.donor_message,
         },
       })
-      .then(({ error }) => {
-        if (error) throw error;
+      .then(({ data, error }) => {
+        if (error) {
+          console.error("Verification error:", error);
+          return;
+        }
+        console.log("Verification result:", data);
         void refetch();
       })
       .catch((err) => {
-        console.error("Donation status-page verification error:", err);
+        console.error("Verification error:", err);
       });
-  }, [transactionId, donationMeta, donation?.status, refetch]);
-
-  useEffect(() => {
-    if (!transactionId) return;
-    if (donation?.status === "completed" || donation?.status === "failed") {
-      try {
-        sessionStorage.removeItem(`payment_meta_${transactionId}`);
-      } catch {
-        // ignore
-      }
-    }
-  }, [donation?.status, transactionId]);
+  }, [transactionId, donation, refetch]);
 
   const status = (donation?.status || "pending") as DonationStatusType;
-  const timedOut = pollCount >= 60;
+  const timedOut = pollCount >= 100;
 
   const statusConfig = {
     pending: {
@@ -148,24 +121,50 @@ const DonationStatus = () => {
       <div className="min-h-screen bg-background">
         <Header />
         <div className="max-w-lg mx-auto px-4 py-16 text-center">
-          <Loader2 className="w-8 h-8 animate-spin mx-auto text-muted-foreground" />
+          <Loader2 className="w-8 h-8 animate-spin mx-auto text-muted-foreground mb-4" />
+          <p className="text-sm text-muted-foreground">Loading donation status...</p>
         </div>
       </div>
     );
   }
 
+  // Record should exist (created before widget opened)
   if (!donation && timedOut) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
         <div className="max-w-lg mx-auto px-4 py-16 text-center">
+          <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-6">
+            <XCircle className="w-8 h-8 text-red-500" />
+          </div>
           <h1 className="text-xl font-semibold mb-2">Donation not found</h1>
           <p className="text-muted-foreground mb-6">
-            We couldn't find this donation. It may have expired or the link is incorrect.
+            This donation link may be invalid or expired.
           </p>
           <Button asChild>
             <Link to="/donate">Make a Donation</Link>
           </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Still waiting for record
+  if (!donation) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="max-w-lg mx-auto px-4 py-16 text-center">
+          <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center mx-auto mb-6">
+            <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
+          </div>
+          <h1 className="text-xl font-semibold mb-2">Setting up your donation</h1>
+          <p className="text-sm text-muted-foreground mb-6">
+            Please wait while we prepare your transaction...
+          </p>
+          <p className="text-xs text-muted-foreground">
+            ID: {transactionId}
+          </p>
         </div>
       </div>
     );
@@ -205,32 +204,30 @@ const DonationStatus = () => {
           <p className="text-muted-foreground mb-8">{config.description}</p>
 
           {/* Donation Info */}
-          {donation && (
-            <div className="flex items-center gap-4 p-4 rounded-xl border border-border bg-card mb-8">
-              <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                <Heart className="w-6 h-6 text-primary" />
-              </div>
-              <div className="text-left">
-                <p className="text-xs text-muted-foreground">Donation to</p>
-                <p className="font-medium">Depths of Zambia</p>
-                <p className="text-sm text-muted-foreground">
-                  K{Number(donation.amount).toFixed(2)} via{" "}
-                  {String(donation.payment_method || "")
-                    .toLowerCase()
-                    .includes("mtn")
-                    ? "MTN MoMo"
-                    : String(donation.payment_method || "")
-                        .toLowerCase()
-                        .includes("airtel")
-                      ? "Airtel Money"
-                      : "Mobile Money"}
-                </p>
-              </div>
+          <div className="flex items-center gap-4 p-4 rounded-xl border border-border bg-card mb-8">
+            <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+              <Heart className="w-6 h-6 text-primary" />
             </div>
-          )}
+            <div className="text-left">
+              <p className="text-xs text-muted-foreground">Donation to</p>
+              <p className="font-medium">Depths of Zambia</p>
+              <p className="text-sm text-muted-foreground">
+                K{Number(donation.amount).toFixed(2)} via{" "}
+                {String(donation.payment_method || "")
+                  .toLowerCase()
+                  .includes("mtn")
+                  ? "MTN MoMo"
+                  : String(donation.payment_method || "")
+                      .toLowerCase()
+                      .includes("airtel")
+                    ? "Airtel Money"
+                    : "Mobile Money"}
+              </p>
+            </div>
+          </div>
 
           {/* Donor info if provided */}
-          {donation?.donor_name && status === "completed" && (
+          {donation.donor_name && status === "completed" && (
             <div className="rounded-xl bg-muted/50 p-4 mb-8 text-left">
               <p className="text-sm font-medium mb-1">Thank you, {donation.donor_name}!</p>
               {donation.donor_message && (
@@ -250,7 +247,10 @@ const DonationStatus = () => {
               </div>
               <Button
                 variant="outline"
-                onClick={() => refetch()}
+                onClick={() => {
+                  verifyAttemptedRef.current = false;
+                  void refetch();
+                }}
                 className="gap-2"
               >
                 <RefreshCw className="w-4 h-4" />

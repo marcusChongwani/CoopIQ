@@ -98,7 +98,7 @@ const BookPayment = () => {
     if (!current || current === 10) form.setValue("amount", minPrice);
   }, [book, minPrice, form]);
 
-  const openLencoWidget = (data: PaymentFormData) => {
+  const initiatePayment = async (data: PaymentFormData) => {
     if (!book || !lencoConfig?.publicKey) {
       toast.error("Payment service not available");
       return;
@@ -109,86 +109,68 @@ const BookPayment = () => {
       return;
     }
 
+    setIsProcessing(true);
     const reference = `BOOK-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
 
-    // Persist minimal context so the status page can retry verification if needed.
     try {
-      sessionStorage.setItem(
-        `payment_meta_${reference}`,
-        JSON.stringify({
+      // Step 1: Create pending record in database FIRST
+      const { error: initError } = await supabase.functions.invoke("initiate-payment", {
+        body: {
           type: "book",
-          bookId: book.id,
+          reference,
           email: data.email,
           amount: data.amount,
-        })
-      );
-    } catch {
-      // ignore storage errors (private mode, etc.)
-    }
+          bookId: book.id,
+        },
+      });
 
-    setIsProcessing(true);
+      if (initError) {
+        console.error("Failed to initiate payment:", initError);
+        toast.error("Failed to start payment. Please try again.");
+        setIsProcessing(false);
+        return;
+      }
 
-    window.LencoPay.getPaid({
-      key: lencoConfig.publicKey,
-      reference,
-      email: data.email,
-      amount: data.amount,
-      currency: "ZMW",
-      channels: ["mobile-money"],
-      label: book.title,
-      onSuccess: async () => {
-        // IMPORTANT: always use the reference we passed into the widget.
-        // Some widget responses return a different reference value.
-        console.log("Lenco widget success - verifying:", reference);
+      console.log("Payment record created, opening widget:", reference);
 
-        try {
-          const { data: verifyResult, error } = await supabase.functions.invoke(
-            "verify-lenco-payment",
-            {
-              body: {
-                reference,
-                type: "book",
-                bookId: book.id,
-                email: data.email,
-                amount: data.amount,
-              },
-            }
-          );
-
-          if (error) throw error;
-
-          if (verifyResult?.status === "completed" && verifyResult?.downloadToken) {
-            toast.success("Payment confirmed. Preparing download...");
-            navigate(`/download/${verifyResult.downloadToken}`, { replace: true });
-            return;
-          }
-
-          // If still pending (or anything else), go to status page and keep polling.
-          toast.success("Payment received. Finalizing...");
-          navigate(`/payment-status/${reference}`, { replace: true });
-        } catch (err) {
-          console.error("Verification error:", err);
-          // Never block the user on the payment page.
-          toast.success("Payment received. Checking status...");
-          navigate(`/payment-status/${reference}`, { replace: true });
-        } finally {
+      // Step 2: Open Lenco widget
+      window.LencoPay.getPaid({
+        key: lencoConfig.publicKey,
+        reference,
+        email: data.email,
+        amount: data.amount,
+        currency: "ZMW",
+        channels: ["mobile-money"],
+        label: book.title,
+        onSuccess: () => {
+          console.log("Widget success callback - navigating to status page");
           setIsProcessing(false);
-        }
-      },
-      onClose: () => {
-        setIsProcessing(false);
-        toast.info("Payment cancelled");
-      },
-      onConfirmationPending: () => {
-        setIsProcessing(false);
-        toast.info("Please complete the payment on your phone");
-        navigate(`/payment-status/${reference}`);
-      },
-    });
+          toast.success("Payment initiated! Verifying...");
+          navigate(`/payment-status/${reference}`, { replace: true });
+        },
+        onClose: () => {
+          console.log("Widget closed");
+          setIsProcessing(false);
+          // Still navigate to status page - user may have completed payment on phone
+          toast.info("Checking payment status...");
+          navigate(`/payment-status/${reference}`);
+        },
+        onConfirmationPending: () => {
+          console.log("Confirmation pending - navigating to status page");
+          setIsProcessing(false);
+          toast.info("Complete the payment on your phone");
+          navigate(`/payment-status/${reference}`);
+        },
+      });
+    } catch (err) {
+      console.error("Payment initiation error:", err);
+      toast.error("Something went wrong. Please try again.");
+      setIsProcessing(false);
+    }
   };
 
   const onSubmit = (data: PaymentFormData) => {
-    openLencoWidget(data);
+    initiatePayment(data);
   };
 
   if (isLoading) {

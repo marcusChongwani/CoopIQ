@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.get-lenco-public-key]
 verify_jwt = false
+
+[functions.initiate-payment]
+verify_jwt = false
