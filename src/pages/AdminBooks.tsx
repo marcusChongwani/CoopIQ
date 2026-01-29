@@ -22,7 +22,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Pencil, Trash2, Upload, FileText, Image, Loader2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, Upload, FileText, Image, Loader2, Search } from 'lucide-react';
 import { Tables } from '@/integrations/supabase/types';
 import TableSkeleton from '@/components/TableSkeleton';
 
@@ -61,6 +61,7 @@ export default function AdminBooks() {
   const [formData, setFormData] = useState<BookFormData>(initialFormData);
   const [isUploadingCover, setIsUploadingCover] = useState(false);
   const [isUploadingPdf, setIsUploadingPdf] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const coverInputRef = useRef<HTMLInputElement>(null);
   const pdfInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -210,16 +211,32 @@ export default function AdminBooks() {
     }
   };
 
+  const filteredBooks = books?.filter((book) =>
+    book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    book.subtitle?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    book.description?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <h1 className="text-3xl font-bold">Books</h1>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={() => { setEditingBook(null); setFormData(initialFormData); }}>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Book
-            </Button>
+        <div className="flex items-center gap-3">
+          <div className="relative flex-1 sm:flex-none">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search books..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 w-full sm:w-64"
+            />
+          </div>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button onClick={() => { setEditingBook(null); setFormData(initialFormData); }}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Book
+              </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
@@ -359,6 +376,7 @@ export default function AdminBooks() {
             </form>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       {isLoading ? (
@@ -378,7 +396,7 @@ export default function AdminBooks() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {books?.map((book) => (
+                {filteredBooks?.map((book) => (
                   <TableRow key={book.id}>
                     <TableCell>
                       {book.cover_image ? (
