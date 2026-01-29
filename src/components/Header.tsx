@@ -90,7 +90,12 @@ const Header = () => {
                   <LogOut className="h-4 w-4 mr-2" />
                   Sign Out
                 </Button>
-                {/* Mobile menu button for admin */}
+                {/* Mobile Dashboard button + menu for admin */}
+                <Link to="/admin" className="md:hidden">
+                  <Button variant="ghost" size="sm" className="rounded-full">
+                    <LayoutDashboard className="h-5 w-5" />
+                  </Button>
+                </Link>
                 <button
                   className="md:hidden p-1.5 sm:p-2"
                   onClick={() => setIsMenuOpen(!isMenuOpen)}

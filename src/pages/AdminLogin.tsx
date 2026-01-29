@@ -69,13 +69,8 @@ export default function AdminLogin() {
             description: error.message,
             variant: 'destructive',
           });
-        } else {
-          toast({
-            title: 'Login Successful',
-            description: 'Welcome to the admin dashboard',
-          });
-          navigate('/admin');
         }
+        // Navigation is handled by useEffect when isAdmin becomes true
       }
     } finally {
       setIsLoading(false);
