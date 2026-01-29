@@ -101,12 +101,8 @@ const BookPayment = () => {
       if (error) throw error;
 
       if (result?.success) {
-        if (result.status === "pending") {
-          toast.info("Please check your phone to complete the payment. You will receive your download link shortly.");
-        } else if (result?.downloadToken) {
-          toast.success("Payment successful! Redirecting to download...");
-          navigate(`/download/${result.downloadToken}`);
-        }
+        // Redirect to payment status page to track progress
+        navigate(`/payment-status/${result.transactionId}`);
       } else {
         throw new Error(result?.error || "Payment failed");
       }

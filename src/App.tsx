@@ -24,6 +24,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminBooks from "./pages/AdminBooks";
 import AdminVideos from "./pages/AdminVideos";
 import AdminPayments from "./pages/AdminPayments";
+import PaymentStatus from "./pages/PaymentStatus";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ const App = () => (
             <Route path="/book/:slug" element={<BookDetail />} />
             <Route path="/book/:slug/payment" element={<BookPayment />} />
             <Route path="/download/:token" element={<BookDownload />} />
+            <Route path="/payment-status/:transactionId" element={<PaymentStatus />} />
             <Route path="/books" element={<Books />} />
             <Route path="/videos" element={<Videos />} />
             <Route path="/donate" element={<Donate />} />
