@@ -89,7 +89,25 @@ const Donate = () => {
       return;
     }
 
-    const reference = `DON-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+    const reference = `DONATION-${Date.now()}-${Math.random()
+      .toString(36)
+      .substring(2, 8)}`;
+
+    // Persist minimal context so the status page can retry verification if needed.
+    try {
+      sessionStorage.setItem(
+        `payment_meta_${reference}`,
+        JSON.stringify({
+          type: "donation",
+          email: data.email,
+          amount: data.amount,
+          donorName: data.donorName,
+          donorMessage: data.donorMessage,
+        })
+      );
+    } catch {
+      // ignore storage errors (private mode, etc.)
+    }
 
     setIsProcessing(true);
 
@@ -102,11 +120,30 @@ const Donate = () => {
       channels: ["mobile-money"],
       label: "Donation to Depths of Zambia",
       customer: data.donorName ? { firstName: data.donorName } : undefined,
-      onSuccess: (response) => {
-        console.log("Donation widget success - redirecting:", response.reference);
-        setIsProcessing(false);
-        toast.success("Thank you for your donation!");
-        navigate(`/donation-status/${response.reference}`);
+      onSuccess: async () => {
+        // IMPORTANT: always use the reference we passed into the widget.
+        console.log("Donation widget success - verifying:", reference);
+
+        try {
+          const { error } = await supabase.functions.invoke("verify-lenco-payment", {
+            body: {
+              reference,
+              type: "donation",
+              email: data.email,
+              donorName: data.donorName,
+              donorMessage: data.donorMessage,
+              amount: data.amount,
+            },
+          });
+          if (error) throw error;
+        } catch (err) {
+          console.error("Donation verification error:", err);
+          // Never block the user; the status page will keep polling.
+        } finally {
+          setIsProcessing(false);
+          toast.success("Thank you! Checking donation status...");
+          navigate(`/donation-status/${reference}`, { replace: true });
+        }
       },
       onClose: () => {
         setIsProcessing(false);
