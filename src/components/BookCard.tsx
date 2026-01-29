@@ -26,7 +26,7 @@ const BookCard = ({
         <img
           src={image}
           alt={title}
-          className="w-full h-auto rounded"
+          className="w-full h-auto aspect-square object-cover rounded"
         />
       </div>
 
