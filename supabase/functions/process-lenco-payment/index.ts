@@ -66,10 +66,10 @@ Deno.serve(async (req) => {
     // Generate unique reference
     const reference = `${type.toUpperCase()}-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
 
-    // Map payment method to Lenco operator
+    // Map payment method to Lenco operator (based on Lenco API docs)
     const operatorMap: Record<string, string> = {
-      mtn: "mtn-zm",
-      airtel: "airtel-zm",
+      mtn: "mtn",
+      airtel: "airtel",
     };
 
     // Format phone number (remove leading 0, add country code if needed)
