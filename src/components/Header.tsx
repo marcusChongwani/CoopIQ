@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, X, ShieldCheck, LogOut, LayoutDashboard, BookOpen, Video, Home } from "lucide-react";
+import { Menu, X, ShieldCheck, LogOut, LayoutDashboard, BookOpen, Video, Home, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
@@ -29,11 +29,11 @@ const Header = () => {
     { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
     { to: "/admin/books", label: "Books", icon: BookOpen },
     { to: "/admin/videos", label: "Videos", icon: Video },
-    { to: "/", label: "View Site", icon: Home },
+    { to: "/admin/payments", label: "Payments", icon: CreditCard },
   ];
 
   const navLinks = isAdmin
-    ? adminNavLinks.slice(0, 3).map(({ to, label }) => ({ to, label }))
+    ? adminNavLinks.map(({ to, label }) => ({ to, label }))
     : publicNavLinks;
 
   return (
@@ -42,11 +42,8 @@ const Header = () => {
         <div className="flex items-center justify-between h-14 sm:h-16 pill-nav px-4 sm:px-6">
           {/* Logo */}
           <div className="flex items-center min-w-0 gap-3">
-            <Link to={isAdmin ? "/" : "/"} className="flex items-center gap-2 sm:gap-3">
+            <Link to="/" className="flex items-center">
               <img src={logo} alt="Depths of Zambia" className="h-8 sm:h-10 w-auto" />
-              <span className="text-base sm:text-xl font-bold font-serif text-primary hidden md:block truncate">
-                Depths of Zambia
-              </span>
             </Link>
             {isAdmin && (
               <Badge variant="secondary" className="hidden sm:inline-flex items-center gap-1 text-xs">
@@ -73,6 +70,13 @@ const Header = () => {
                 className="text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all text-muted-foreground"
               >
                 View Site
+              </Link>
+            )}
+            {!isAdmin && (
+              <Link to="/donate">
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full">
+                  Donate
+                </Button>
               </Link>
             )}
           </nav>
@@ -107,11 +111,6 @@ const Header = () => {
               </>
             ) : (
               <>
-                <Link to="/donate">
-                  <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full">
-                    Donate
-                  </Button>
-                </Link>
                 {/* Mobile Menu Button for public */}
                 <button
                   className="md:hidden p-1.5 sm:p-2"
@@ -142,6 +141,14 @@ const Header = () => {
                       {link.label}
                     </Link>
                   ))}
+                  <Link
+                    to="/"
+                    className="flex items-center gap-3 text-sm font-medium hover:bg-muted/60 rounded-xl px-4 py-3 transition-all text-muted-foreground"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <Home className="h-4 w-4" />
+                    View Site
+                  </Link>
                   <div className="border-t border-border my-2" />
                   <button
                     className="flex items-center gap-3 text-sm font-medium text-destructive hover:bg-destructive/10 rounded-xl px-4 py-3 transition-all w-full text-left"
