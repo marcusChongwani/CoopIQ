@@ -6,7 +6,6 @@ import HeroSection from "@/components/HeroSection";
 import IntroSection from "@/components/IntroSection";
 import MissionSection from "@/components/MissionSection";
 import DonationSection from "@/components/DonationSection";
-import { articles } from "@/data/articles";
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -24,7 +23,30 @@ const Index = () => {
       return data;
     },
   });
-  const featuredArticles = articles.slice(0, 2);
+
+  const { data: featuredVideos = [] } = useQuery({
+    queryKey: ["featured-videos"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("videos")
+        .select("*")
+        .eq("featured", true)
+        .order("created_at", { ascending: false })
+        .limit(3);
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const getYouTubeEmbedUrl = (url: string) => {
+    const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/);
+    return match ? `https://www.youtube.com/embed/${match[1]}` : url;
+  };
+
+  const getYouTubeThumbnail = (url: string) => {
+    const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/);
+    return match ? `https://img.youtube.com/vi/${match[1]}/maxresdefault.jpg` : "/placeholder.svg";
+  };
 
   return (
     <div className="min-h-screen bg-background animate-fade-in">
@@ -48,9 +70,18 @@ const Index = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredArticles.map((article, index) => (
-              <div key={article.id} className={`animate-slide-up stagger-${Math.min(index + 1, 6)}`}>
-                <ArticleCard {...article} videoUrl={article.videoUrl} size="small" />
+            {featuredVideos.map((video, index) => (
+              <div key={video.id} className={`animate-slide-up stagger-${Math.min(index + 1, 6)}`}>
+                <ArticleCard
+                  id={video.id}
+                  title={video.title}
+                  category={video.category}
+                  date={new Date(video.created_at).toLocaleDateString()}
+                  image={video.thumbnail || getYouTubeThumbnail(video.youtube_url)}
+                  videoUrl={getYouTubeEmbedUrl(video.youtube_url)}
+                  subtitle={video.subtitle || video.description || ""}
+                  size="small"
+                />
               </div>
             ))}
           </div>

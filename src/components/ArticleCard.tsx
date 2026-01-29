@@ -10,7 +10,6 @@ interface ArticleCardProps {
   videoUrl?: string;
   size?: "small" | "large";
   subtitle?: string;
-  linkPrefix?: string;
 }
 
 const ArticleCard = ({
@@ -20,11 +19,10 @@ const ArticleCard = ({
   videoUrl,
   size = "small",
   subtitle = "The deeper story of Zambia's debt trap with China.",
-  linkPrefix = "/article",
 }: ArticleCardProps) => {
   return (
     <Link
-      to={`${linkPrefix}/${id}`}
+      to={`/article/${id}`}
       className={[
         "group block overflow-hidden",
         "transition-all duration-300",
