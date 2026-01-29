@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -37,6 +37,7 @@ const presetAmounts = [10, 20, 50, 100, 500];
 
 const Donate = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const initialAmount = Number(searchParams.get("amount")) || 50;
   
   const [selectedMethod, setSelectedMethod] = useState<"mtn" | "airtel">("mtn");
@@ -76,13 +77,9 @@ const Donate = () => {
 
       if (error) throw error;
 
-      if (result?.success) {
-        if (result.status === "pending") {
-          toast.info("Please check your phone to complete the payment.");
-        } else {
-          toast.success("Thank you for your donation! Your support means everything.");
-        }
-        form.reset({ email: "", phone: "", amount: 50, donorName: "", donorMessage: "" });
+      if (result?.success && result?.transactionId) {
+        // Redirect to donation status page
+        navigate(`/donation-status/${result.transactionId}`);
       } else {
         throw new Error(result?.error || "Payment failed");
       }
