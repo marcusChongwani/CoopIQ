@@ -1,40 +1,38 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, X, ShieldCheck, LogOut, LayoutDashboard, BookOpen, Video, Home, CreditCard } from "lucide-react";
+import { Menu, X, ShieldCheck, LogOut, LayoutDashboard, BookOpen, Video, Home, CreditCard, ChevronDown, Megaphone, DollarSign, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/useAuth";
 import logo from "@/assets/logo.png";
+
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isAdmin, signOut } = useAuth();
   const navigate = useNavigate();
+
   const handleSignOut = async () => {
     await signOut();
     setIsMenuOpen(false);
     navigate("/");
   };
+
   const publicNavLinks = [
-    {
-      to: "/",
-      label: "Home",
-    },
-    {
-      to: "/videos",
-      label: "Videos",
-    },
-    {
-      to: "/books",
-      label: "Books",
-    },
-    {
-      to: "/donate",
-      label: "Advertise",
-    },
-    {
-      to: "/contact",
-      label: "Contact",
-    },
+    { to: "/", label: "Home" },
+    { to: "/videos", label: "Videos" },
+    { to: "/books", label: "Books" },
+  ];
+
+  const moreLinks = [
+    { to: "/advertise", label: "Advertise With Us", icon: Megaphone },
+    { to: "/how-we-make-money", label: "How We Make Money", icon: DollarSign },
+    { to: "/contact", label: "Contact", icon: Mail },
   ];
   const adminNavLinks = [
     {
@@ -92,7 +90,26 @@ const Header = () => {
                 {link.label}
               </Link>
             ))}
-            {isAdmin}
+            {!isAdmin && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all flex items-center gap-1">
+                    More
+                    <ChevronDown className="h-4 w-4" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  {moreLinks.map((link) => (
+                    <DropdownMenuItem key={link.to} asChild>
+                      <Link to={link.to} className="flex items-center gap-2 cursor-pointer">
+                        <link.icon className="h-4 w-4" />
+                        {link.label}
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
             {!isAdmin && (
               <Link to="/donate">
                 <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full">Donate</Button>
@@ -173,7 +190,7 @@ const Header = () => {
                   </button>
                 </>
               ) : (
-                <>
+              <>
                   {publicNavLinks.map((link) => (
                     <Link
                       key={link.to}
@@ -181,6 +198,19 @@ const Header = () => {
                       className="text-sm font-medium hover:bg-muted/60 rounded-xl px-4 py-3 transition-all"
                       onClick={() => setIsMenuOpen(false)}
                     >
+                      {link.label}
+                    </Link>
+                  ))}
+                  <div className="border-t border-border my-2" />
+                  <p className="text-xs text-muted-foreground px-4 py-2">More</p>
+                  {moreLinks.map((link) => (
+                    <Link
+                      key={link.to}
+                      to={link.to}
+                      className="flex items-center gap-3 text-sm font-medium hover:bg-muted/60 rounded-xl px-4 py-3 transition-all"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <link.icon className="h-4 w-4" />
                       {link.label}
                     </Link>
                   ))}
