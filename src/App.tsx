@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import Article from "./pages/Article";
 import BookDetail from "./pages/BookDetail";
@@ -22,39 +23,53 @@ import StyleGuide from "./pages/StyleGuide";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
+import Admin from "./pages/Admin";
+import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminBooks from "./pages/AdminBooks";
+import AdminVideos from "./pages/AdminVideos";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/article/:id" element={<Article />} />
-          <Route path="/book/:slug" element={<BookDetail />} />
-          <Route path="/book/:slug/payment" element={<BookPayment />} />
-          <Route path="/download/:token" element={<BookDownload />} />
-          <Route path="/books" element={<Books />} />
-          <Route path="/videos" element={<Videos />} />
-          <Route path="/donate" element={<Donate />} />
-          <Route path="/wellness" element={<Wellness />} />
-          <Route path="/travel" element={<Travel />} />
-          <Route path="/creativity" element={<Creativity />} />
-          <Route path="/growth" element={<Growth />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/authors" element={<Authors />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/style-guide" element={<StyleGuide />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/terms" element={<Terms />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/article/:id" element={<Article />} />
+            <Route path="/book/:slug" element={<BookDetail />} />
+            <Route path="/book/:slug/payment" element={<BookPayment />} />
+            <Route path="/download/:token" element={<BookDownload />} />
+            <Route path="/books" element={<Books />} />
+            <Route path="/videos" element={<Videos />} />
+            <Route path="/donate" element={<Donate />} />
+            <Route path="/wellness" element={<Wellness />} />
+            <Route path="/travel" element={<Travel />} />
+            <Route path="/creativity" element={<Creativity />} />
+            <Route path="/growth" element={<Growth />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/authors" element={<Authors />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/style-guide" element={<StyleGuide />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
+            {/* Admin Routes */}
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin" element={<Admin />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="books" element={<AdminBooks />} />
+              <Route path="videos" element={<AdminVideos />} />
+            </Route>
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
