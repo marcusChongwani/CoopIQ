@@ -87,6 +87,7 @@ Deno.serve(async (req) => {
           status: internalStatus,
           lenco_reference: data.lencoReference,
           updated_at: new Date().toISOString(),
+          is_verified: internalStatus === "completed",
         })
         .eq("transaction_id", data.reference);
 
@@ -108,6 +109,8 @@ Deno.serve(async (req) => {
       };
 
       if (internalStatus === "completed") {
+        updateData.is_verified = true;
+        
         // Check if download token already exists
         const { data: existingPurchase } = await supabase
           .from("book_purchases")

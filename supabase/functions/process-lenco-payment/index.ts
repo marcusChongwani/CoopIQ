@@ -144,6 +144,7 @@ Deno.serve(async (req) => {
           status: paymentStatus,
           transaction_id: reference,
           lenco_reference: lencoReference,
+          is_verified: false,
         });
 
       if (donationError) {
@@ -210,6 +211,7 @@ Deno.serve(async (req) => {
           lenco_reference: lencoReference,
           status: paymentStatus === "successful" ? "completed" : paymentStatus,
           download_token: paymentStatus === "successful" ? downloadToken : null,
+          is_verified: false,
         });
 
       if (purchaseError) {
