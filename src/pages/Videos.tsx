@@ -8,6 +8,40 @@ import { supabase } from "@/integrations/supabase/client";
 
 const ITEMS_PER_PAGE = 6;
 
+const VideoCardSkeleton = ({ size = "small" }: { size?: "small" | "large" }) => {
+  return (
+    <div
+      className={[
+        "group block overflow-hidden animate-pulse",
+        size === "large" ? "col-span-1 md:col-span-2" : "",
+      ].join(" ")}
+    >
+      {/* Thumbnail */}
+      <div
+        className={[
+          "relative bg-muted rounded-md overflow-hidden",
+          size === "large" ? "aspect-[16/8]" : "aspect-[16/9]",
+        ].join(" ")}
+      >
+        {/* Fake play overlay (since it’s a video card) */}
+        <div className="absolute inset-0 flex items-center justify-center bg-black/15">
+          <div className="h-14 w-14 rounded-full bg-white/70" />
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="py-4 space-y-3">
+        <div className="h-6 w-5/6 bg-muted rounded-lg" /> {/* title */}
+        <div className="space-y-2">
+          <div className="h-4 w-full bg-muted rounded" />
+          <div className="h-4 w-11/12 bg-muted rounded" />
+        </div>
+      </div>
+    </div>
+  );
+};
+;
+
 const Videos = () => {
   const [page, setPage] = useState(1);
 
@@ -24,6 +58,7 @@ const Videos = () => {
   });
 
   const totalPages = Math.ceil(videos.length / ITEMS_PER_PAGE);
+
   const paginatedVideos = videos.slice(
     (page - 1) * ITEMS_PER_PAGE,
     page * ITEMS_PER_PAGE
@@ -31,14 +66,20 @@ const Videos = () => {
 
   // Get YouTube embed URL for video playback
   const getYouTubeEmbedUrl = (url: string) => {
-    const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/);
+    const match = url.match(
+      /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/
+    );
     return match ? `https://www.youtube.com/embed/${match[1]}` : url;
   };
 
   // Get thumbnail from YouTube URL
   const getYouTubeThumbnail = (url: string) => {
-    const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/);
-    return match ? `https://img.youtube.com/vi/${match[1]}/maxresdefault.jpg` : "/placeholder.svg";
+    const match = url.match(
+      /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/
+    );
+    return match
+      ? `https://img.youtube.com/vi/${match[1]}/maxresdefault.jpg`
+      : "/placeholder.svg";
   };
 
   return (
@@ -51,14 +92,25 @@ const Videos = () => {
             All Videos
           </h1>
           <p className="mt-2 text-muted-foreground">
-            Watch our collection of videos explaining Zambia's stories.
+            Watch our collection of videos explaining Zambia&apos;s stories.
           </p>
         </div>
 
         {isLoading ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          </div>
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+              {Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
+                <VideoCardSkeleton key={i} />
+              ))}
+            </div>
+
+            {/* Pagination skeleton placeholder */}
+            <div className="flex items-center justify-center gap-2 opacity-70">
+              <div className="h-10 w-10 rounded-xl bg-muted animate-pulse" />
+              <div className="h-10 w-24 rounded-xl bg-muted animate-pulse" />
+              <div className="h-10 w-10 rounded-xl bg-muted animate-pulse" />
+            </div>
+          </>
         ) : paginatedVideos.length === 0 ? (
           <div className="text-center py-16 text-muted-foreground">
             No videos available yet. Check back soon!
@@ -89,6 +141,7 @@ const Videos = () => {
                   size="icon"
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
+                  className="rounded-xl"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
@@ -100,7 +153,7 @@ const Videos = () => {
                       variant={page === i + 1 ? "default" : "ghost"}
                       size="sm"
                       onClick={() => setPage(i + 1)}
-                      className="w-8 h-8 p-0"
+                      className="w-9 h-9 p-0 rounded-xl"
                     >
                       {i + 1}
                     </Button>
@@ -112,6 +165,7 @@ const Videos = () => {
                   size="icon"
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
+                  className="rounded-xl"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </Button>

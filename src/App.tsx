@@ -12,14 +12,9 @@ import BookDownload from "./pages/BookDownload";
 import Books from "./pages/Books";
 import Videos from "./pages/Videos";
 import Donate from "./pages/Donate";
-import Wellness from "./pages/Wellness";
-import Travel from "./pages/Travel";
-import Creativity from "./pages/Creativity";
-import Growth from "./pages/Growth";
 import About from "./pages/About";
 import Authors from "./pages/Authors";
 import Contact from "./pages/Contact";
-import StyleGuide from "./pages/StyleGuide";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
@@ -47,14 +42,9 @@ const App = () => (
             <Route path="/books" element={<Books />} />
             <Route path="/videos" element={<Videos />} />
             <Route path="/donate" element={<Donate />} />
-            <Route path="/wellness" element={<Wellness />} />
-            <Route path="/travel" element={<Travel />} />
-            <Route path="/creativity" element={<Creativity />} />
-            <Route path="/growth" element={<Growth />} />
             <Route path="/about" element={<About />} />
             <Route path="/authors" element={<Authors />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/style-guide" element={<StyleGuide />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
             {/* Admin Routes */}

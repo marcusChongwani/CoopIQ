@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { z } from 'zod';
+import Header from '@/components/Header';
 
 const authSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -90,60 +91,101 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">{isSignUp ? 'Create Account' : 'Admin Login'}</CardTitle>
-          <CardDescription>
-            {isSignUp ? 'Sign up to request admin access' : 'Sign in to access the admin dashboard'}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="admin@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-              />
-            </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {isSignUp ? 'Creating account...' : 'Signing in...'}
-                </>
-              ) : (
-                isSignUp ? 'Create Account' : 'Sign In'
-              )}
-            </Button>
-          </form>
-          <div className="mt-4 text-center">
-            <button
-              type="button"
-              onClick={() => setIsSignUp(!isSignUp)}
-              className="text-sm text-muted-foreground hover:text-foreground underline"
-            >
-              {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
-            </button>
+  <>
+  <Header/>
+ 
+    <div className="py-28 sm:py-16 bg-background flex items-center justify-center px-4">
+    <div className="w-full max-w-md">
+      {/* Header */}
+      <div className="mb-8 text-center">
+        <h1 className="text-2xl font-semibold tracking-tight">
+          {isSignUp ? "Create an admin account" : "Welcome back"}
+        </h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          {isSignUp
+            ? "Request access to the admin dashboard."
+            : "Sign in to manage content and settings."}
+        </p>
+      </div>
+  
+      {/* Card */}
+      <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-sm">
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-sm">
+              Email
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="admin@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="h-12 rounded-xl"
+            />
           </div>
-        </CardContent>
-      </Card>
+  
+          <div className="space-y-2">
+            <Label htmlFor="password" className="text-sm">
+              Password
+            </Label>
+            <Input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
+              className="h-12 rounded-xl"
+            />
+          </div>
+  
+          <Button
+            type="submit"
+            className="w-full h-12 rounded-xl text-base font-medium"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {isSignUp ? "Creating account…" : "Signing in…"}
+              </>
+            ) : isSignUp ? (
+              "Create account"
+            ) : (
+              "Sign in"
+            )}
+          </Button>
+        </form>
+      </div>
+  
+      {/* Footer switch */}
+      <div className="mt-6 text-center">
+        <button
+          type="button"
+          onClick={() => setIsSignUp(!isSignUp)}
+          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          {isSignUp ? (
+            <>
+              Already have an account?{" "}
+              <span className="font-medium underline underline-offset-4">
+                Sign in
+              </span>
+            </>
+          ) : (
+            <>
+              Don’t have an account?{" "}
+              <span className="font-medium underline underline-offset-4">
+                Sign up
+              </span>
+            </>
+          )}
+        </button>
+      </div>
     </div>
+  </div>
+  </>
   );
 }

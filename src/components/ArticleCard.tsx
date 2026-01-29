@@ -32,7 +32,7 @@ const ArticleCard = ({
       {/* Thumbnail with Play Overlay */}
       <div
         className={[
-          "relative bg-muted overflow-hidden",
+          "relative bg-muted rounded-md overflow-hidden",
           size === "large" ? "aspect-[16/8]" : "aspect-[16/9]",
         ].join(" ")}
       >

@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 const Article = () => {
   const { id } = useParams<{ id: string }>();
-  const article = id ? getArticleById(id) : undefined;
+  const article = id ;
   
   if (!article) {
     return <Navigate to="/404" replace />;

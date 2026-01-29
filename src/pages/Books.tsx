@@ -8,6 +8,27 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const ITEMS_PER_PAGE = 6;
 
+const BookCardSkeleton = () => {
+  return (
+    <div className="flex sm:flex-row gap-6 bg-background rounded-lg animate-pulse">
+      {/* Cover */}
+      <div className="flex-shrink-0 w-40">
+        <div className="w-full aspect-[3/4] bg-muted rounded" />
+      </div>
+
+      {/* Content */}
+      <div className="flex flex-col justify-center gap-3 flex-1">
+        <div className="h-7 w-4/5 bg-muted rounded-lg" />
+        <div className="h-7 w-3/5 bg-muted rounded-lg" />
+
+        <div className="h-4 w-2/3 bg-muted rounded" />
+
+        <div className="h-11 w-36 bg-muted rounded-md mt-2" />
+      </div>
+    </div>
+  );
+};
+
 const Books = () => {
   const [page, setPage] = useState(1);
 
@@ -40,23 +61,33 @@ const Books = () => {
             All Books
           </h1>
           <p className="mt-2 text-muted-foreground">
-            Explore our collection of books about Zambia's economy, history, and culture.
+            Explore our collection of books about Zambia&apos;s economy, history, and
+            culture.
           </p>
         </div>
 
         {isLoading ? (
-          <div className="space-y-6">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="animate-pulse bg-muted rounded-lg h-40" />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              {Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
+                <BookCardSkeleton key={i} />
+              ))}
+            </div>
+
+            {/* Pagination skeleton placeholder */}
+            <div className="flex items-center justify-center gap-2 opacity-70">
+              <div className="h-10 w-10 rounded-xl bg-muted animate-pulse" />
+              <div className="h-10 w-24 rounded-xl bg-muted animate-pulse" />
+              <div className="h-10 w-10 rounded-xl bg-muted animate-pulse" />
+            </div>
+          </>
         ) : data?.books.length === 0 ? (
           <div className="text-center py-16 text-muted-foreground">
             No books available yet. Check back soon!
           </div>
         ) : (
           <>
-            <div className="space-y-6 grid grid-cols-1 md:grid-cols-2 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               {data?.books.map((book) => (
                 <BookCard
                   key={book.id}
@@ -77,6 +108,7 @@ const Books = () => {
                   size="icon"
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
+                  className="rounded-xl"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
@@ -88,7 +120,7 @@ const Books = () => {
                       variant={page === i + 1 ? "default" : "ghost"}
                       size="sm"
                       onClick={() => setPage(i + 1)}
-                      className="w-8 h-8 p-0"
+                      className="w-9 h-9 p-0 rounded-xl"
                     >
                       {i + 1}
                     </Button>
@@ -100,6 +132,7 @@ const Books = () => {
                   size="icon"
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
+                  className="rounded-xl"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </Button>

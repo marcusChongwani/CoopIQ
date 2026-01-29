@@ -5,6 +5,67 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, ShoppingCart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
+const SkeletonBlock = ({ className }: { className: string }) => (
+  <div className={`animate-pulse rounded-xl bg-muted ${className}`} />
+);
+
+const BookDetailSkeleton = () => {
+  return (
+    <div className="min-h-screen bg-background">
+      <Header />
+
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Back */}
+        <div className="mb-8">
+          <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+            <ArrowLeft className="w-4 h-4" />
+            <SkeletonBlock className="h-4 w-24" />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          {/* Cover */}
+          <div className="flex justify-center lg:justify-start">
+            <SkeletonBlock className="w-full max-w-sm aspect-square rounded-2xl" />
+          </div>
+
+          {/* Details */}
+          <div className="space-y-6">
+            <div>
+              <SkeletonBlock className="h-10 w-4/5 rounded-2xl" />
+              <SkeletonBlock className="h-10 w-3/5 mt-3 rounded-2xl" />
+
+              <div className="mt-5 space-y-3">
+                <SkeletonBlock className="h-4 w-full" />
+                <SkeletonBlock className="h-4 w-11/12" />
+                <SkeletonBlock className="h-4 w-10/12" />
+                <SkeletonBlock className="h-4 w-8/12" />
+              </div>
+            </div>
+
+            <div className="py-4 border-y border-border">
+              <SkeletonBlock className="h-8 w-32 rounded-2xl" />
+              <SkeletonBlock className="h-4 w-72 mt-2" />
+            </div>
+
+            {/* Desktop button placeholder */}
+            <div className="hidden lg:block">
+              <SkeletonBlock className="h-12 w-56 rounded-full" />
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile floating button placeholder */}
+        <div className="block lg:hidden">
+          <div className="fixed bottom-0 left-0 w-full z-40 px-4 py-4">
+            <SkeletonBlock className="h-14 w-full rounded-full" />
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+};
+
 const BookDetail = () => {
   const { slug } = useParams<{ slug: string }>();
 
@@ -23,23 +84,12 @@ const BookDetail = () => {
     enabled: !!slug,
   });
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <div className="max-w-4xl mx-auto px-4 py-16 text-center">
-          <div className="animate-pulse">Loading...</div>
-        </div>
-      </div>
-    );
-  }
+  if (isLoading) return <BookDetailSkeleton />;
 
-  if (error || !book) {
-    return <Navigate to="/404" replace />;
-  }
+  if (error || !book) return <Navigate to="/404" replace />;
 
   return (
-    <div className=" bg-background animate-fade-in">
+    <div className="bg-background animate-fade-in">
       <Header />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -61,7 +111,7 @@ const BookDetail = () => {
             <img
               src={book.cover_image || "/placeholder.svg"}
               alt={book.title}
-              className="w-full max-w-sm object-cover rounded-md "
+              className="w-full max-w-sm aspect-square  object-cover rounded-2xl"
             />
           </div>
 
@@ -71,13 +121,14 @@ const BookDetail = () => {
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-3">
                 {book.title}
               </h1>
+
               {book.description && (
-              <div className="prose prose-lg max-w-none">
-                <p className="text-muted-foreground leading-relaxed">
-                  {book.description}
-                </p>
-              </div>
-            )}
+                <div className="prose prose-lg max-w-none">
+                  <p className="text-muted-foreground leading-relaxed">
+                    {book.description}
+                  </p>
+                </div>
+              )}
             </div>
 
             <div className="py-4 border-y border-border">
@@ -89,13 +140,11 @@ const BookDetail = () => {
               </p>
             </div>
 
-            
-
             {/* Floating Buy Button for mobile, static for larger screens */}
             <div className="pt-4 relative">
               {/* Floating on mobile screens */}
               <div className="block lg:hidden">
-                <div className="fixed bottom-0 left-0 w-full z-40  px-4 py-4">
+                <div className="fixed bottom-0 left-0 w-full z-40 px-4 py-4">
                   <Link to={`/book/${slug}/payment`}>
                     <Button
                       size="lg"
@@ -107,7 +156,8 @@ const BookDetail = () => {
                   </Link>
                 </div>
               </div>
-              {/* Maintained/static on desktop */}
+
+              {/* Desktop */}
               <div className="hidden lg:block">
                 <Link to={`/book/${slug}/payment`}>
                   <Button
@@ -120,8 +170,6 @@ const BookDetail = () => {
                 </Link>
               </div>
             </div>
-
-            
           </div>
         </div>
       </main>
