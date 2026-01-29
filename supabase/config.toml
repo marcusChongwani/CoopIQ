@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.process-lenco-payment]
 verify_jwt = false
+
+[functions.lenco-webhook]
+verify_jwt = false
