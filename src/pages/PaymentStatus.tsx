@@ -10,8 +10,7 @@ import {
   XCircle, 
   Smartphone, 
   ArrowLeft,
-  RefreshCw,
-  Download
+  RefreshCw
 } from "lucide-react";
 
 type PaymentStatusType = "pending" | "completed" | "failed";
@@ -51,13 +50,10 @@ const PaymentStatus = () => {
     }
   }, [purchase?.status]);
 
-  // Redirect to download if completed
+  // Redirect to download immediately if completed
   useEffect(() => {
     if (purchase?.status === "completed" && purchase?.download_token) {
-      const timer = setTimeout(() => {
-        navigate(`/download/${purchase.download_token}`);
-      }, 2000);
-      return () => clearTimeout(timer);
+      navigate(`/download/${purchase.download_token}`, { replace: true });
     }
   }, [purchase?.status, purchase?.download_token, navigate]);
 
@@ -74,7 +70,7 @@ const PaymentStatus = () => {
     completed: {
       icon: CheckCircle2,
       title: "Payment successful!",
-      description: "Your payment has been confirmed. Redirecting to download...",
+      description: "Redirecting to your download...",
       color: "text-green-500",
       bgColor: "bg-green-500/10",
     },
@@ -192,13 +188,11 @@ const PaymentStatus = () => {
             </div>
           )}
 
-          {status === "completed" && purchase.download_token && (
-            <Button asChild size="lg" className="gap-2">
-              <Link to={`/download/${purchase.download_token}`}>
-                <Download className="w-5 h-5" />
-                Download Now
-              </Link>
-            </Button>
+          {status === "completed" && (
+            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Redirecting to download...
+            </div>
           )}
 
           {status === "failed" && book && (
