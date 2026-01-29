@@ -1,1 +1,10 @@
 project_id = "crxhwhfzzxkoafsvvgyr"
+
+[functions.get-book-download]
+verify_jwt = false
+
+[functions.process-book-payment]
+verify_jwt = false
+
+[functions.process-lenco-payment]
+verify_jwt = false

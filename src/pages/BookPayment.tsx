@@ -1,4 +1,3 @@
-
 import { useEffect, useMemo, useState } from "react";
 import { useParams, Navigate, Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -86,9 +85,10 @@ const BookPayment = () => {
 
     try {
       const { data: result, error } = await supabase.functions.invoke(
-        "process-book-payment",
+        "process-lenco-payment",
         {
           body: {
+            type: "book",
             bookId: book.id,
             email: data.email,
             phone: data.phone,
@@ -100,9 +100,13 @@ const BookPayment = () => {
 
       if (error) throw error;
 
-      if (result?.success && result?.downloadToken) {
-        toast.success("Payment successful! Redirecting to download...");
-        navigate(`/download/${result.downloadToken}`);
+      if (result?.success) {
+        if (result.status === "pending") {
+          toast.info("Please check your phone to complete the payment. You will receive your download link shortly.");
+        } else if (result?.downloadToken) {
+          toast.success("Payment successful! Redirecting to download...");
+          navigate(`/download/${result.downloadToken}`);
+        }
       } else {
         throw new Error(result?.error || "Payment failed");
       }
@@ -290,7 +294,7 @@ const BookPayment = () => {
                   <div className="text-xs text-muted-foreground flex items-start gap-2 pt-1">
                     <ShieldCheck className="w-4 h-4 mt-0.5" />
                     <p>
-                      You’ll receive the download link immediately after payment.
+                      You'll receive the download link immediately after payment.
                     </p>
                   </div>
                 </form>

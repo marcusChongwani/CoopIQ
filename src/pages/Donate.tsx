@@ -6,6 +6,7 @@ import { z } from "zod";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Form,
   FormControl,
@@ -14,7 +15,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { ArrowLeft, Phone, Mail, Loader2, ShieldCheck, Heart } from "lucide-react";
+import { ArrowLeft, Phone, Mail, Loader2, ShieldCheck, Heart, User, MessageSquare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -26,6 +27,8 @@ const donationSchema = z.object({
     .max(15, "Phone number is too long")
     .regex(/^[0-9+]+$/, "Please enter a valid phone number"),
   amount: z.number().min(1, "Amount must be at least K1"),
+  donorName: z.string().optional(),
+  donorMessage: z.string().max(500, "Message is too long").optional(),
 });
 
 type DonationFormData = z.infer<typeof donationSchema>;
@@ -45,6 +48,8 @@ const Donate = () => {
       email: "",
       phone: "",
       amount: initialAmount,
+      donorName: "",
+      donorMessage: "",
     },
   });
 
@@ -54,11 +59,33 @@ const Donate = () => {
     setIsProcessing(true);
 
     try {
-      // Simulate donation processing (would integrate with real payment API)
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      
-      toast.success("Thank you for your donation! Your support means everything.");
-      form.reset({ email: "", phone: "", amount: 50 });
+      const { data: result, error } = await supabase.functions.invoke(
+        "process-lenco-payment",
+        {
+          body: {
+            type: "donation",
+            email: data.email,
+            phone: data.phone,
+            amount: data.amount,
+            paymentMethod: selectedMethod,
+            donorName: data.donorName || undefined,
+            donorMessage: data.donorMessage || undefined,
+          },
+        }
+      );
+
+      if (error) throw error;
+
+      if (result?.success) {
+        if (result.status === "pending") {
+          toast.info("Please check your phone to complete the payment.");
+        } else {
+          toast.success("Thank you for your donation! Your support means everything.");
+        }
+        form.reset({ email: "", phone: "", amount: 50, donorName: "", donorMessage: "" });
+      } else {
+        throw new Error(result?.error || "Payment failed");
+      }
     } catch (err) {
       console.error("Donation error:", err);
       toast.error("Donation failed. Please try again.");
@@ -164,6 +191,29 @@ const Donate = () => {
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
                 <FormField
                   control={form.control}
+                  name="donorName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm">
+                        Your name <span className="text-muted-foreground">(optional)</span>
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                          <Input
+                            placeholder="Your name"
+                            className="pl-10 h-12 rounded-xl"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
                   name="email"
                   render={({ field }) => (
                     <FormItem>
@@ -223,6 +273,29 @@ const Donate = () => {
                             field.onChange(parseFloat(e.target.value) || 0)
                           }
                         />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="donorMessage"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm">
+                        Message <span className="text-muted-foreground">(optional)</span>
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <MessageSquare className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                          <Textarea
+                            placeholder="Leave a message of support..."
+                            className="pl-10 min-h-[80px] rounded-xl resize-none"
+                            {...field}
+                          />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

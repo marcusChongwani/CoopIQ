@@ -1,11 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, BookOpen, Video, Home } from "lucide-react";
+import { LayoutDashboard, BookOpen, Video, CreditCard } from "lucide-react";
 
 const navItems = [
   { to: "/admin", icon: LayoutDashboard, label: "Dashboard" },
   { to: "/admin/books", icon: BookOpen, label: "Books" },
   { to: "/admin/videos", icon: Video, label: "Videos" },
-  { to: "/", icon: Home, label: "Site" },
+  { to: "/admin/payments", icon: CreditCard, label: "Payments" },
 ];
 
 export default function AdminBottomNav() {
