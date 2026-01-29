@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
@@ -17,12 +17,33 @@ import {
 
 type DonationStatusType = "pending" | "completed" | "failed";
 
+type DonationMeta =
+  | {
+      type: "donation";
+      email: string;
+      amount: number;
+      donorName?: string;
+      donorMessage?: string;
+    }
+  | null;
+
 const DonationStatus = () => {
   const { transactionId } = useParams<{ transactionId: string }>();
   const [pollCount, setPollCount] = useState(0);
+  const verifyAttemptedRef = useRef(false);
+
+  const donationMeta: DonationMeta = useMemo(() => {
+    if (!transactionId) return null;
+    try {
+      const raw = sessionStorage.getItem(`payment_meta_${transactionId}`);
+      return raw ? (JSON.parse(raw) as DonationMeta) : null;
+    } catch {
+      return null;
+    }
+  }, [transactionId]);
 
   // Poll for donation status every 5 seconds
-  const { data: donation, isLoading, refetch } = useQuery({
+  const { data: donation, isLoading, refetch, dataUpdatedAt } = useQuery({
     queryKey: ["donation-status", transactionId],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -46,12 +67,54 @@ const DonationStatus = () => {
   });
 
   useEffect(() => {
-    if (donation?.status === "pending") {
-      setPollCount((prev) => prev + 1);
+    // Count every poll tick (even if the row doesn't exist yet) so we can time out gracefully.
+    if (!transactionId) return;
+    if (!dataUpdatedAt) return;
+    setPollCount((prev) => prev + 1);
+  }, [dataUpdatedAt, transactionId]);
+
+  useEffect(() => {
+    if (!transactionId) return;
+    if (verifyAttemptedRef.current) return;
+    if (!donationMeta || donationMeta.type !== "donation") return;
+    if (!donationMeta.email) return;
+    if (donation?.status === "completed" || donation?.status === "failed") return;
+
+    verifyAttemptedRef.current = true;
+
+    supabase.functions
+      .invoke("verify-lenco-payment", {
+        body: {
+          reference: transactionId,
+          type: "donation",
+          email: donationMeta.email,
+          amount: donationMeta.amount,
+          donorName: donationMeta.donorName,
+          donorMessage: donationMeta.donorMessage,
+        },
+      })
+      .then(({ error }) => {
+        if (error) throw error;
+        void refetch();
+      })
+      .catch((err) => {
+        console.error("Donation status-page verification error:", err);
+      });
+  }, [transactionId, donationMeta, donation?.status, refetch]);
+
+  useEffect(() => {
+    if (!transactionId) return;
+    if (donation?.status === "completed" || donation?.status === "failed") {
+      try {
+        sessionStorage.removeItem(`payment_meta_${transactionId}`);
+      } catch {
+        // ignore
+      }
     }
-  }, [donation?.status]);
+  }, [donation?.status, transactionId]);
 
   const status = (donation?.status || "pending") as DonationStatusType;
+  const timedOut = pollCount >= 60;
 
   const statusConfig = {
     pending: {
@@ -91,7 +154,7 @@ const DonationStatus = () => {
     );
   }
 
-  if (!donation) {
+  if (!donation && timedOut) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -142,22 +205,32 @@ const DonationStatus = () => {
           <p className="text-muted-foreground mb-8">{config.description}</p>
 
           {/* Donation Info */}
-          <div className="flex items-center gap-4 p-4 rounded-xl border border-border bg-card mb-8">
-            <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-              <Heart className="w-6 h-6 text-primary" />
+          {donation && (
+            <div className="flex items-center gap-4 p-4 rounded-xl border border-border bg-card mb-8">
+              <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                <Heart className="w-6 h-6 text-primary" />
+              </div>
+              <div className="text-left">
+                <p className="text-xs text-muted-foreground">Donation to</p>
+                <p className="font-medium">Depths of Zambia</p>
+                <p className="text-sm text-muted-foreground">
+                  K{Number(donation.amount).toFixed(2)} via{" "}
+                  {String(donation.payment_method || "")
+                    .toLowerCase()
+                    .includes("mtn")
+                    ? "MTN MoMo"
+                    : String(donation.payment_method || "")
+                        .toLowerCase()
+                        .includes("airtel")
+                      ? "Airtel Money"
+                      : "Mobile Money"}
+                </p>
+              </div>
             </div>
-            <div className="text-left">
-              <p className="text-xs text-muted-foreground">Donation to</p>
-              <p className="font-medium">Depths of Zambia</p>
-              <p className="text-sm text-muted-foreground">
-                K{Number(donation.amount).toFixed(2)} via{" "}
-                {donation.payment_method === "mtn" ? "MTN MoMo" : "Airtel Money"}
-              </p>
-            </div>
-          </div>
+          )}
 
           {/* Donor info if provided */}
-          {donation.donor_name && status === "completed" && (
+          {donation?.donor_name && status === "completed" && (
             <div className="rounded-xl bg-muted/50 p-4 mb-8 text-left">
               <p className="text-sm font-medium mb-1">Thank you, {donation.donor_name}!</p>
               {donation.donor_message && (

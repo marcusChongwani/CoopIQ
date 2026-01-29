@@ -111,6 +111,21 @@ const BookPayment = () => {
 
     const reference = `BOOK-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
 
+    // Persist minimal context so the status page can retry verification if needed.
+    try {
+      sessionStorage.setItem(
+        `payment_meta_${reference}`,
+        JSON.stringify({
+          type: "book",
+          bookId: book.id,
+          email: data.email,
+          amount: data.amount,
+        })
+      );
+    } catch {
+      // ignore storage errors (private mode, etc.)
+    }
+
     setIsProcessing(true);
 
     window.LencoPay.getPaid({
@@ -121,11 +136,44 @@ const BookPayment = () => {
       currency: "ZMW",
       channels: ["mobile-money"],
       label: book.title,
-      onSuccess: (response) => {
-        console.log("Lenco widget success - redirecting:", response.reference);
-        setIsProcessing(false);
-        toast.success("Payment successful!");
-        navigate(`/payment-status/${response.reference}`);
+      onSuccess: async () => {
+        // IMPORTANT: always use the reference we passed into the widget.
+        // Some widget responses return a different reference value.
+        console.log("Lenco widget success - verifying:", reference);
+
+        try {
+          const { data: verifyResult, error } = await supabase.functions.invoke(
+            "verify-lenco-payment",
+            {
+              body: {
+                reference,
+                type: "book",
+                bookId: book.id,
+                email: data.email,
+                amount: data.amount,
+              },
+            }
+          );
+
+          if (error) throw error;
+
+          if (verifyResult?.status === "completed" && verifyResult?.downloadToken) {
+            toast.success("Payment confirmed. Preparing download...");
+            navigate(`/download/${verifyResult.downloadToken}`, { replace: true });
+            return;
+          }
+
+          // If still pending (or anything else), go to status page and keep polling.
+          toast.success("Payment received. Finalizing...");
+          navigate(`/payment-status/${reference}`, { replace: true });
+        } catch (err) {
+          console.error("Verification error:", err);
+          // Never block the user on the payment page.
+          toast.success("Payment received. Checking status...");
+          navigate(`/payment-status/${reference}`, { replace: true });
+        } finally {
+          setIsProcessing(false);
+        }
       },
       onClose: () => {
         setIsProcessing(false);

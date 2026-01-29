@@ -63,16 +63,57 @@ Deno.serve(async (req) => {
       );
     }
 
-    const paymentData = verifyData.data;
-    const paymentStatus = paymentData.status === "successful" ? "completed" : "failed";
-    const lencoReference = paymentData.lencoReference;
+    const paymentData = verifyData.data ?? {};
 
-    if (type === "book" && bookId) {
+    const rawStatus = String(paymentData.status ?? "").toLowerCase();
+    let paymentStatus: "pending" | "completed" | "failed" = "pending";
+    if (["successful", "success", "completed"].includes(rawStatus)) {
+      paymentStatus = "completed";
+    } else if (
+      [
+        "failed",
+        "failure",
+        "cancelled",
+        "canceled",
+        "reversed",
+        "expired",
+      ].includes(rawStatus)
+    ) {
+      paymentStatus = "failed";
+    }
+
+    const lencoReference = paymentData.lencoReference ?? null;
+
+    if (type === "book") {
+      // If the caller doesn't send metadata (e.g. status page retry), try to recover it.
+      const { data: existingPurchase } = await supabase
+        .from("book_purchases")
+        .select("id,status,download_token,is_verified,book_id,buyer_email,buyer_phone,amount")
+        .eq("transaction_id", reference)
+        .maybeSingle();
+
+      const resolvedBookId = bookId || existingPurchase?.book_id;
+      const resolvedEmail = email || existingPurchase?.buyer_email;
+      const resolvedPhone = phone || existingPurchase?.buyer_phone || "";
+
+      if (!resolvedBookId || !resolvedEmail) {
+        return new Response(
+          JSON.stringify({
+            success: false,
+            error: "Missing book metadata for verification",
+          }),
+          {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          }
+        );
+      }
+
       // Verify book exists
       const { data: book, error: bookError } = await supabase
         .from("books")
         .select("*")
-        .eq("id", bookId)
+        .eq("id", resolvedBookId)
         .single();
 
       if (bookError || !book) {
@@ -83,55 +124,55 @@ Deno.serve(async (req) => {
         );
       }
 
-      // Generate download token only if successful
-      const downloadToken = paymentStatus === "completed" ? crypto.randomUUID() : null;
+      // Don't downgrade an already-completed purchase (verification can be eventually consistent).
+      const resolvedStatus =
+        existingPurchase?.status === "completed" ? "completed" : paymentStatus;
+      const resolvedDownloadToken =
+        resolvedStatus === "completed"
+          ? existingPurchase?.download_token ?? crypto.randomUUID()
+          : existingPurchase?.download_token ?? null;
+      const resolvedIsVerified =
+        Boolean(existingPurchase?.is_verified) || resolvedStatus === "completed";
 
       // Create or update purchase record
-      const { data: existingPurchase } = await supabase
-        .from("book_purchases")
-        .select("id")
-        .eq("transaction_id", reference)
-        .maybeSingle();
-
       if (existingPurchase) {
-        // Update existing
         await supabase
           .from("book_purchases")
           .update({
-            status: paymentStatus,
-            is_verified: paymentStatus === "completed",
-            download_token: downloadToken,
+            status: resolvedStatus,
+            is_verified: resolvedIsVerified,
+            download_token: resolvedDownloadToken,
             lenco_reference: lencoReference,
           })
           .eq("id", existingPurchase.id);
       } else {
-        // Create new
-        await supabase
-          .from("book_purchases")
-          .insert({
-            book_id: bookId,
-            buyer_email: email,
-            buyer_phone: phone || "",
-            payment_method: paymentData.type || "mobile-money",
-            amount: parseFloat(paymentData.amount),
-            transaction_id: reference,
-            lenco_reference: lencoReference,
-            status: paymentStatus,
-            download_token: downloadToken,
-            is_verified: paymentStatus === "completed",
-          });
+        await supabase.from("book_purchases").insert({
+          book_id: resolvedBookId,
+          buyer_email: resolvedEmail,
+          buyer_phone: resolvedPhone,
+          payment_method: paymentData.type || "mobile-money",
+          amount: Number(paymentData.amount ?? amount ?? 0),
+          transaction_id: reference,
+          lenco_reference: lencoReference,
+          status: resolvedStatus,
+          download_token: resolvedDownloadToken,
+          is_verified: resolvedIsVerified,
+        });
       }
 
       console.log(`Book purchase verified: ${reference}, status: ${paymentStatus}`);
 
       return new Response(
         JSON.stringify({
-          success: paymentStatus === "completed",
-          status: paymentStatus,
-          downloadToken,
-          message: paymentStatus === "completed" 
-            ? "Payment verified successfully" 
-            : "Payment was not successful",
+          success: resolvedStatus === "completed",
+          status: resolvedStatus,
+          downloadToken: resolvedStatus === "completed" ? resolvedDownloadToken : null,
+          message:
+            resolvedStatus === "completed"
+              ? "Payment verified successfully"
+              : resolvedStatus === "pending"
+                ? "Payment is still pending"
+                : "Payment was not successful",
         }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
@@ -139,16 +180,37 @@ Deno.serve(async (req) => {
       // Handle donation verification
       const { data: existingDonation } = await supabase
         .from("donations")
-        .select("id")
+        .select("id,status,is_verified,donor_email,donor_phone,amount")
         .eq("transaction_id", reference)
         .maybeSingle();
+
+      const resolvedEmail = email || existingDonation?.donor_email;
+      const resolvedPhone = phone || existingDonation?.donor_phone || "";
+
+      if (!resolvedEmail) {
+        return new Response(
+          JSON.stringify({
+            success: false,
+            error: "Missing donor email for verification",
+          }),
+          {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          }
+        );
+      }
+
+      const resolvedStatus =
+        existingDonation?.status === "completed" ? "completed" : paymentStatus;
+      const resolvedIsVerified =
+        Boolean(existingDonation?.is_verified) || resolvedStatus === "completed";
 
       if (existingDonation) {
         await supabase
           .from("donations")
           .update({
-            status: paymentStatus,
-            is_verified: paymentStatus === "completed",
+            status: resolvedStatus,
+            is_verified: resolvedIsVerified,
             lenco_reference: lencoReference,
           })
           .eq("id", existingDonation.id);
@@ -157,27 +219,30 @@ Deno.serve(async (req) => {
           .from("donations")
           .insert({
             donor_name: donorName || null,
-            donor_email: email,
-            donor_phone: phone || "",
+            donor_email: resolvedEmail,
+            donor_phone: resolvedPhone,
             donor_message: donorMessage || null,
             payment_method: paymentData.type || "mobile-money",
-            amount: parseFloat(paymentData.amount),
+            amount: Number(paymentData.amount ?? amount ?? 0),
             transaction_id: reference,
             lenco_reference: lencoReference,
-            status: paymentStatus,
-            is_verified: paymentStatus === "completed",
+            status: resolvedStatus,
+            is_verified: resolvedIsVerified,
           });
       }
 
-      console.log(`Donation verified: ${reference}, status: ${paymentStatus}`);
+      console.log(`Donation verified: ${reference}, status: ${resolvedStatus}`);
 
       return new Response(
         JSON.stringify({
-          success: paymentStatus === "completed",
-          status: paymentStatus,
-          message: paymentStatus === "completed" 
-            ? "Donation verified successfully" 
-            : "Payment was not successful",
+          success: resolvedStatus === "completed",
+          status: resolvedStatus,
+          message:
+            resolvedStatus === "completed"
+              ? "Donation verified successfully"
+              : resolvedStatus === "pending"
+                ? "Donation is still pending"
+                : "Payment was not successful",
         }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
