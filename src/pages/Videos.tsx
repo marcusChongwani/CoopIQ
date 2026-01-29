@@ -45,6 +45,7 @@ const Videos = () => {
                   category={article.category}
                   date={article.date}
                   image={article.image}
+                  videoUrl={article.videoUrl}
                   subtitle={article.subtitle}
                   size="small"
                 />

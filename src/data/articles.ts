@@ -6,6 +6,7 @@ export interface Article {
   date: string;
   readTime: string;
   image: string;
+  videoUrl?: string; // YouTube embed URL
   author: {
     name: string;
     avatar: string;
@@ -31,6 +32,7 @@ export const articles: Article[] = [
     date: "Oct 16, 2024",
     readTime: "5 min",
     image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=1920&q=80",
+    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
     author: {
       name: "David Kim",
       avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800&q=80",
@@ -68,6 +70,7 @@ export const articles: Article[] = [
     date: "Oct 23, 2024",
     readTime: "6 min",
     image: "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=1920&q=80",
+    videoUrl: "https://www.youtube.com/embed/jNQXAC9IVRw",
     author: {
       name: "Sofia Rodriguez",
       avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&q=80",
