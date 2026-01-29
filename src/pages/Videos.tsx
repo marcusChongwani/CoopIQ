@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
-import VideoCard from "@/components/VideoCard";
+import ArticleCard from "@/components/ArticleCard";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,7 +29,7 @@ const Videos = () => {
     page * ITEMS_PER_PAGE
   );
 
-  // Extract YouTube video ID and create embed URL
+  // Get YouTube embed URL for video playback
   const getYouTubeEmbedUrl = (url: string) => {
     const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/);
     return match ? `https://www.youtube.com/embed/${match[1]}` : url;
@@ -68,13 +67,16 @@ const Videos = () => {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
               {paginatedVideos.map((video) => (
-                <VideoCard
+                <ArticleCard
                   key={video.id}
+                  id={video.id}
                   title={video.title}
-                  description={video.description || video.subtitle || ""}
-                  thumbnail={video.thumbnail || getYouTubeThumbnail(video.youtube_url)}
-                  duration=""
-                  url={video.youtube_url}
+                  category={video.category}
+                  date={new Date(video.created_at).toLocaleDateString()}
+                  image={video.thumbnail || getYouTubeThumbnail(video.youtube_url)}
+                  videoUrl={getYouTubeEmbedUrl(video.youtube_url)}
+                  subtitle={video.subtitle || video.description || ""}
+                  size="small"
                 />
               ))}
             </div>
