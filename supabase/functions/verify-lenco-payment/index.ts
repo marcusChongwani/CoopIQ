@@ -26,7 +26,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    const { reference, type, bookId, email, phone, amount } = await req.json();
+    const { reference, type, bookId, email, phone, amount, donorName, donorMessage } = await req.json();
 
     if (!reference) {
       return new Response(
@@ -156,8 +156,10 @@ Deno.serve(async (req) => {
         await supabase
           .from("donations")
           .insert({
+            donor_name: donorName || null,
             donor_email: email,
             donor_phone: phone || "",
+            donor_message: donorMessage || null,
             payment_method: paymentData.type || "mobile-money",
             amount: parseFloat(paymentData.amount),
             transaction_id: reference,

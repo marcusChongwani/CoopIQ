@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -15,17 +16,36 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { ArrowLeft, Phone, Mail, Loader2, ShieldCheck, Heart, User, MessageSquare } from "lucide-react";
+import { ArrowLeft, Mail, Loader2, ShieldCheck, Heart, User, MessageSquare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+declare global {
+  interface Window {
+    LencoPay: {
+      getPaid: (options: {
+        key: string;
+        reference: string;
+        email: string;
+        amount: number;
+        currency: string;
+        channels: string[];
+        label?: string;
+        customer?: {
+          firstName?: string;
+          lastName?: string;
+          phone?: string;
+        };
+        onSuccess: (response: { reference: string }) => void;
+        onClose: () => void;
+        onConfirmationPending: () => void;
+      }) => void;
+    };
+  }
+}
+
 const donationSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
-  phone: z
-    .string()
-    .min(10, "Phone number must be at least 10 digits")
-    .max(15, "Phone number is too long")
-    .regex(/^[0-9+]+$/, "Please enter a valid phone number"),
   amount: z.number().min(1, "Amount must be at least K1"),
   donorName: z.string().optional(),
   donorMessage: z.string().max(500, "Message is too long").optional(),
@@ -40,14 +60,21 @@ const Donate = () => {
   const navigate = useNavigate();
   const initialAmount = Number(searchParams.get("amount")) || 50;
   
-  const [selectedMethod, setSelectedMethod] = useState<"mtn" | "airtel">("mtn");
   const [isProcessing, setIsProcessing] = useState(false);
+
+  const { data: lencoConfig } = useQuery({
+    queryKey: ["lenco-public-key"],
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke("get-lenco-public-key");
+      if (error) throw error;
+      return data;
+    },
+  });
 
   const form = useForm<DonationFormData>({
     resolver: zodResolver(donationSchema),
     defaultValues: {
       email: "",
-      phone: "",
       amount: initialAmount,
       donorName: "",
       donorMessage: "",
@@ -56,39 +83,72 @@ const Donate = () => {
 
   const currentAmount = form.watch("amount");
 
-  const onSubmit = async (data: DonationFormData) => {
+  const openLencoWidget = (data: DonationFormData) => {
+    if (!lencoConfig?.publicKey) {
+      toast.error("Payment service not available");
+      return;
+    }
+
+    const reference = `DON-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+
     setIsProcessing(true);
 
-    try {
-      const { data: result, error } = await supabase.functions.invoke(
-        "process-lenco-payment",
-        {
-          body: {
-            type: "donation",
-            email: data.email,
-            phone: data.phone,
-            amount: data.amount,
-            paymentMethod: selectedMethod,
-            donorName: data.donorName || undefined,
-            donorMessage: data.donorMessage || undefined,
-          },
+    window.LencoPay.getPaid({
+      key: lencoConfig.publicKey,
+      reference,
+      email: data.email,
+      amount: data.amount,
+      currency: "ZMW",
+      channels: ["mobile-money"],
+      label: "Donation to Depths of Zambia",
+      customer: data.donorName ? { firstName: data.donorName } : undefined,
+      onSuccess: async (response) => {
+        console.log("Donation successful:", response.reference);
+        
+        try {
+          const { data: verifyResult, error } = await supabase.functions.invoke(
+            "verify-lenco-payment",
+            {
+              body: {
+                reference: response.reference,
+                type: "donation",
+                email: data.email,
+                donorName: data.donorName,
+                donorMessage: data.donorMessage,
+              },
+            }
+          );
+
+          if (error) throw error;
+
+          if (verifyResult?.success) {
+            toast.success("Thank you for your donation!");
+            navigate(`/donation-status/${response.reference}?success=true`);
+          } else {
+            toast.error("Donation verification failed. Please contact support.");
+            navigate(`/donation-status/${response.reference}`);
+          }
+        } catch (err) {
+          console.error("Verification error:", err);
+          toast.error("Could not verify donation. Please contact support.");
+        } finally {
+          setIsProcessing(false);
         }
-      );
+      },
+      onClose: () => {
+        setIsProcessing(false);
+        toast.info("Donation cancelled");
+      },
+      onConfirmationPending: () => {
+        setIsProcessing(false);
+        toast.info("Please complete the payment on your phone");
+        navigate(`/donation-status/${reference}`);
+      },
+    });
+  };
 
-      if (error) throw error;
-
-      if (result?.success && result?.transactionId) {
-        // Redirect to donation status page
-        navigate(`/donation-status/${result.transactionId}`);
-      } else {
-        throw new Error(result?.error || "Payment failed");
-      }
-    } catch (err) {
-      console.error("Donation error:", err);
-      toast.error("Donation failed. Please try again.");
-    } finally {
-      setIsProcessing(false);
-    }
+  const onSubmit = (data: DonationFormData) => {
+    openLencoWidget(data);
   };
 
   return (
@@ -96,7 +156,6 @@ const Donate = () => {
       <Header />
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Top bar */}
         <div className="flex items-center justify-between mb-6">
           <Link
             to="/"
@@ -112,9 +171,7 @@ const Donate = () => {
           </div>
         </div>
 
-        {/* Split layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Left: form */}
           <section className="lg:col-span-7">
             <div className="mb-6">
               <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">
@@ -145,42 +202,6 @@ const Donate = () => {
                     K{amount}
                   </button>
                 ))}
-              </div>
-            </div>
-
-            {/* Payment method */}
-            <div className="mb-6">
-              <p className="text-sm font-medium mb-2">Payment method</p>
-              <div className="grid grid-cols-2 rounded-xl border border-border overflow-hidden">
-                <button
-                  type="button"
-                  onClick={() => setSelectedMethod("mtn")}
-                  className={[
-                    "px-4 py-3 text-sm font-medium transition-colors",
-                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                    selectedMethod === "mtn"
-                      ? "bg-foreground text-background"
-                      : "bg-card hover:bg-muted/50 text-foreground",
-                  ].join(" ")}
-                  aria-pressed={selectedMethod === "mtn"}
-                >
-                  MTN MoMo
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setSelectedMethod("airtel")}
-                  className={[
-                    "px-4 py-3 text-sm font-medium transition-colors border-l border-border",
-                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                    selectedMethod === "airtel"
-                      ? "bg-foreground text-background"
-                      : "bg-card hover:bg-muted/50 text-foreground",
-                  ].join(" ")}
-                  aria-pressed={selectedMethod === "airtel"}
-                >
-                  Airtel Money
-                </button>
               </div>
             </div>
 
@@ -220,29 +241,6 @@ const Donate = () => {
                           <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                           <Input
                             placeholder="you@example.com"
-                            className="pl-10 h-12 rounded-xl"
-                            {...field}
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm">
-                        {selectedMethod === "mtn" ? "MTN" : "Airtel"} number
-                      </FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                          <Input
-                            placeholder="0977123456"
                             className="pl-10 h-12 rounded-xl"
                             {...field}
                           />
@@ -303,7 +301,7 @@ const Donate = () => {
                   type="submit"
                   size="lg"
                   className="w-full h-12 rounded-xl text-base font-medium"
-                  disabled={isProcessing}
+                  disabled={isProcessing || !lencoConfig?.publicKey}
                 >
                   {isProcessing ? (
                     <>
@@ -332,7 +330,6 @@ const Donate = () => {
             </p>
           </section>
 
-          {/* Right: sticky summary */}
           <aside className="lg:col-span-5">
             <div className="lg:sticky lg:top-24 rounded-2xl border border-border bg-card p-5 sm:p-6 shadow-sm">
               <div className="flex items-center gap-3 mb-4">
@@ -348,13 +345,6 @@ const Donate = () => {
               <div className="my-6 h-px bg-border" />
 
               <div className="space-y-3 text-sm">
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Payment method</span>
-                  <span className="font-medium">
-                    {selectedMethod === "mtn" ? "MTN MoMo" : "Airtel Money"}
-                  </span>
-                </div>
-
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Your donation</span>
                   <span className="font-semibold text-lg">
