@@ -21,13 +21,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 
@@ -50,7 +43,6 @@ interface VideoFormData {
   description: string;
   youtube_url: string;
   thumbnail: string;
-  category: string;
   featured: boolean;
 }
 
@@ -60,17 +52,8 @@ const initialFormData: VideoFormData = {
   description: '',
   youtube_url: '',
   thumbnail: '',
-  category: 'general',
   featured: false,
 };
-
-const categories = [
-  { value: 'general', label: 'General' },
-  { value: 'wellness', label: 'Wellness' },
-  { value: 'travel', label: 'Travel' },
-  { value: 'creativity', label: 'Creativity' },
-  { value: 'growth', label: 'Growth' },
-];
 
 export default function AdminVideos() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -162,7 +145,6 @@ export default function AdminVideos() {
       description: video.description || '',
       youtube_url: video.youtube_url,
       thumbnail: video.thumbnail || '',
-      category: video.category,
       featured: video.featured,
     });
     setIsDialogOpen(true);
@@ -245,30 +227,13 @@ export default function AdminVideos() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="thumbnail">Thumbnail URL (auto-generated from YouTube)</Label>
+                <Label htmlFor="thumbnail">Thumbnail URL (optional - auto-generated from YouTube)</Label>
                 <Input
                   id="thumbnail"
+                  placeholder="Leave empty to auto-generate from YouTube"
                   value={formData.thumbnail}
                   onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })}
                 />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="category">Category</Label>
-                <Select
-                  value={formData.category}
-                  onValueChange={(value) => setFormData({ ...formData, category: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat.value} value={cat.value}>
-                        {cat.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               </div>
               <div className="flex items-center space-x-2">
                 <Switch
@@ -300,7 +265,6 @@ export default function AdminVideos() {
           <TableHeader>
             <TableRow>
               <TableHead>Title</TableHead>
-              <TableHead>Category</TableHead>
               <TableHead>Featured</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -309,7 +273,6 @@ export default function AdminVideos() {
             {videos?.map((video) => (
               <TableRow key={video.id}>
                 <TableCell className="font-medium">{video.title}</TableCell>
-                <TableCell className="capitalize">{video.category}</TableCell>
                 <TableCell>
                   <Switch
                     checked={video.featured}

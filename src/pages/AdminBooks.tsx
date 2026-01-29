@@ -30,23 +30,24 @@ type Book = Tables<'books'>;
 interface BookFormData {
   title: string;
   subtitle: string;
-  slug: string;
   description: string;
   price: number;
-  cover_image: string;
-  file_path: string;
   featured: boolean;
 }
 
 const initialFormData: BookFormData = {
   title: '',
   subtitle: '',
-  slug: '',
   description: '',
   price: 10,
-  cover_image: '',
-  file_path: '',
   featured: false,
+};
+
+const generateSlug = (title: string) => {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
 };
 
 export default function AdminBooks() {
@@ -69,7 +70,7 @@ export default function AdminBooks() {
   });
 
   const createMutation = useMutation({
-    mutationFn: async (data: BookFormData) => {
+    mutationFn: async (data: BookFormData & { slug: string }) => {
       const { error } = await supabase.from('books').insert(data);
       if (error) throw error;
     },
@@ -136,11 +137,8 @@ export default function AdminBooks() {
     setFormData({
       title: book.title,
       subtitle: book.subtitle || '',
-      slug: book.slug,
       description: book.description || '',
       price: book.price,
-      cover_image: book.cover_image || '',
-      file_path: book.file_path || '',
       featured: book.featured,
     });
     setIsDialogOpen(true);
@@ -151,16 +149,10 @@ export default function AdminBooks() {
     if (editingBook) {
       updateMutation.mutate({ id: editingBook.id, data: formData });
     } else {
-      createMutation.mutate(formData);
+      createMutation.mutate({ ...formData, slug: generateSlug(formData.title) });
     }
   };
 
-  const generateSlug = (title: string) => {
-    return title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
-  };
 
   return (
     <div>
@@ -178,31 +170,14 @@ export default function AdminBooks() {
               <DialogTitle>{editingBook ? 'Edit Book' : 'Add New Book'}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="title">Title</Label>
-                  <Input
-                    id="title"
-                    value={formData.title}
-                    onChange={(e) => {
-                      setFormData({
-                        ...formData,
-                        title: e.target.value,
-                        slug: generateSlug(e.target.value),
-                      });
-                    }}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="slug">Slug</Label>
-                  <Input
-                    id="slug"
-                    value={formData.slug}
-                    onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                    required
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="title">Title</Label>
+                <Input
+                  id="title"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  required
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="subtitle">Subtitle</Label>
@@ -221,33 +196,15 @@ export default function AdminBooks() {
                   rows={4}
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="price">Price (ZMW)</Label>
-                  <Input
-                    id="price"
-                    type="number"
-                    step="0.01"
-                    value={formData.price}
-                    onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="cover_image">Cover Image URL</Label>
-                  <Input
-                    id="cover_image"
-                    value={formData.cover_image}
-                    onChange={(e) => setFormData({ ...formData, cover_image: e.target.value })}
-                  />
-                </div>
-              </div>
               <div className="space-y-2">
-                <Label htmlFor="file_path">File Path (Storage)</Label>
+                <Label htmlFor="price">Price (ZMW)</Label>
                 <Input
-                  id="file_path"
-                  value={formData.file_path}
-                  onChange={(e) => setFormData({ ...formData, file_path: e.target.value })}
+                  id="price"
+                  type="number"
+                  step="0.01"
+                  value={formData.price}
+                  onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
+                  required
                 />
               </div>
               <div className="flex items-center space-x-2">
@@ -280,7 +237,6 @@ export default function AdminBooks() {
           <TableHeader>
             <TableRow>
               <TableHead>Title</TableHead>
-              <TableHead>Slug</TableHead>
               <TableHead>Price</TableHead>
               <TableHead>Featured</TableHead>
               <TableHead className="text-right">Actions</TableHead>
@@ -290,7 +246,6 @@ export default function AdminBooks() {
             {books?.map((book) => (
               <TableRow key={book.id}>
                 <TableCell className="font-medium">{book.title}</TableCell>
-                <TableCell>{book.slug}</TableCell>
                 <TableCell>K{book.price}</TableCell>
                 <TableCell>
                   <Switch
