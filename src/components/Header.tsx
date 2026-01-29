@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, X, ShieldCheck, LogOut, LayoutDashboard, BookOpen, Video } from "lucide-react";
+import { Menu, X, ShieldCheck, LogOut, LayoutDashboard, BookOpen, Video, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
@@ -13,6 +13,7 @@ const Header = () => {
 
   const handleSignOut = async () => {
     await signOut();
+    setIsMenuOpen(false);
     navigate("/");
   };
 
@@ -25,12 +26,15 @@ const Header = () => {
   ];
 
   const adminNavLinks = [
-    { to: "/admin", label: "Dashboard" },
-    { to: "/admin/books", label: "Books" },
-    { to: "/admin/videos", label: "Videos" },
+    { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
+    { to: "/admin/books", label: "Books", icon: BookOpen },
+    { to: "/admin/videos", label: "Videos", icon: Video },
+    { to: "/", label: "View Site", icon: Home },
   ];
 
-  const navLinks = isAdmin ? adminNavLinks : publicNavLinks;
+  const navLinks = isAdmin
+    ? adminNavLinks.slice(0, 3).map(({ to, label }) => ({ to, label }))
+    : publicNavLinks;
 
   return (
     <header className="sticky top-0 z-50 py-2 sm:py-4">
@@ -76,54 +80,90 @@ const Header = () => {
           {/* Actions */}
           <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
             {isAdmin ? (
-              <Button
-                variant="outline"
-                className="rounded-full"
-                onClick={handleSignOut}
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                Sign Out
-              </Button>
-            ) : (
-              <Link to="/donate">
-                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full">
-                  Donate
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full hidden sm:flex"
+                  onClick={handleSignOut}
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
                 </Button>
-              </Link>
-            )}
-
-            {/* Mobile Menu Button - only for non-admin */}
-            {!isAdmin && (
-              <button
-                className="md:hidden p-1.5 sm:p-2"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                aria-label="Toggle menu"
-              >
-                {isMenuOpen ? <X className="h-5 w-5 sm:h-6 sm:w-6" /> : <Menu className="h-5 w-5 sm:h-6 sm:w-6" />}
-              </button>
+                {/* Mobile menu button for admin */}
+                <button
+                  className="md:hidden p-1.5 sm:p-2"
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  aria-label="Toggle menu"
+                >
+                  {isMenuOpen ? <X className="h-5 w-5 sm:h-6 sm:w-6" /> : <Menu className="h-5 w-5 sm:h-6 sm:w-6" />}
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/donate">
+                  <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full">
+                    Donate
+                  </Button>
+                </Link>
+                {/* Mobile Menu Button for public */}
+                <button
+                  className="md:hidden p-1.5 sm:p-2"
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  aria-label="Toggle menu"
+                >
+                  {isMenuOpen ? <X className="h-5 w-5 sm:h-6 sm:w-6" /> : <Menu className="h-5 w-5 sm:h-6 sm:w-6" />}
+                </button>
+              </>
             )}
           </div>
         </div>
 
-        {/* Mobile Menu - only for non-admin */}
-        {isMenuOpen && !isAdmin && (
-          <div className="md:hidden py-4 rounded-2xl bg-white animate-fade-in">
-            <nav className="flex flex-col gap-4">
-              {publicNavLinks.map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  className="text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              ))}
-              <Link to="/donate" onClick={() => setIsMenuOpen(false)}>
-                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full w-full">
-                  Donate
-                </Button>
-              </Link>
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="md:hidden py-4 rounded-2xl bg-background border border-border mt-2 animate-fade-in shadow-lg">
+            <nav className="flex flex-col gap-1 px-2">
+              {isAdmin ? (
+                <>
+                  {adminNavLinks.map((link) => (
+                    <Link
+                      key={link.to}
+                      to={link.to}
+                      className="flex items-center gap-3 text-sm font-medium hover:bg-muted/60 rounded-xl px-4 py-3 transition-all"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <link.icon className="h-4 w-4" />
+                      {link.label}
+                    </Link>
+                  ))}
+                  <div className="border-t border-border my-2" />
+                  <button
+                    className="flex items-center gap-3 text-sm font-medium text-destructive hover:bg-destructive/10 rounded-xl px-4 py-3 transition-all w-full text-left"
+                    onClick={handleSignOut}
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <>
+                  {publicNavLinks.map((link) => (
+                    <Link
+                      key={link.to}
+                      to={link.to}
+                      className="text-sm font-medium hover:bg-muted/60 rounded-xl px-4 py-3 transition-all"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                  <Link to="/donate" onClick={() => setIsMenuOpen(false)} className="px-2 pt-2">
+                    <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full w-full">
+                      Donate
+                    </Button>
+                  </Link>
+                </>
+              )}
             </nav>
           </div>
         )}
