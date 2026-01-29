@@ -365,66 +365,70 @@ export default function AdminBooks() {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
       ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Cover</TableHead>
-              <TableHead>Title</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>PDF</TableHead>
-              <TableHead>Featured</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {books?.map((book) => (
-              <TableRow key={book.id}>
-                <TableCell>
-                  {book.cover_image ? (
-                    <img src={book.cover_image} alt={book.title} className="h-12 w-10 object-cover rounded" />
-                  ) : (
-                    <div className="h-12 w-10 bg-muted rounded flex items-center justify-center">
-                      <Image className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                  )}
-                </TableCell>
-                <TableCell className="font-medium">{book.title}</TableCell>
-                <TableCell>K{book.price}</TableCell>
-                <TableCell>
-                  {book.file_path ? (
-                    <span className="text-primary flex items-center gap-1">
-                      <FileText className="h-4 w-4" /> Yes
-                    </span>
-                  ) : (
-                    <span className="text-muted-foreground">No</span>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <Switch
-                    checked={book.featured}
-                    onCheckedChange={(checked) => toggleFeatured.mutate({ id: book.id, featured: checked })}
-                  />
-                </TableCell>
-                <TableCell className="text-right">
-                  <Button variant="ghost" size="icon" onClick={() => openEditDialog(book)}>
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => {
-                      if (confirm('Are you sure you want to delete this book?')) {
-                        deleteMutation.mutate(book.id);
-                      }
-                    }}
-                  >
-                    <Trash2 className="h-4 w-4 text-destructive" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <div className="overflow-x-auto -mx-4 lg:mx-0">
+          <div className="inline-block min-w-full align-middle px-4 lg:px-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="whitespace-nowrap">Cover</TableHead>
+                  <TableHead className="whitespace-nowrap">Title</TableHead>
+                  <TableHead className="whitespace-nowrap">Price</TableHead>
+                  <TableHead className="whitespace-nowrap">PDF</TableHead>
+                  <TableHead className="whitespace-nowrap">Featured</TableHead>
+                  <TableHead className="text-right whitespace-nowrap">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {books?.map((book) => (
+                  <TableRow key={book.id}>
+                    <TableCell>
+                      {book.cover_image ? (
+                        <img src={book.cover_image} alt={book.title} className="h-12 w-10 object-cover rounded" />
+                      ) : (
+                        <div className="h-12 w-10 bg-muted rounded flex items-center justify-center">
+                          <Image className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                      )}
+                    </TableCell>
+                    <TableCell className="font-medium whitespace-nowrap">{book.title}</TableCell>
+                    <TableCell className="whitespace-nowrap">K{book.price}</TableCell>
+                    <TableCell>
+                      {book.file_path ? (
+                        <span className="text-primary flex items-center gap-1 whitespace-nowrap">
+                          <FileText className="h-4 w-4" /> Yes
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground">No</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <Switch
+                        checked={book.featured}
+                        onCheckedChange={(checked) => toggleFeatured.mutate({ id: book.id, featured: checked })}
+                      />
+                    </TableCell>
+                    <TableCell className="text-right whitespace-nowrap">
+                      <Button variant="ghost" size="icon" onClick={() => openEditDialog(book)}>
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          if (confirm('Are you sure you want to delete this book?')) {
+                            deleteMutation.mutate(book.id);
+                          }
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
       )}
     </div>
   );
