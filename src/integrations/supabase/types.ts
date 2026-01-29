@@ -24,6 +24,7 @@ export type Database = {
           download_count: number | null
           download_token: string | null
           id: string
+          lenco_reference: string | null
           payment_method: string
           status: string
           transaction_id: string | null
@@ -38,6 +39,7 @@ export type Database = {
           download_count?: number | null
           download_token?: string | null
           id?: string
+          lenco_reference?: string | null
           payment_method: string
           status?: string
           transaction_id?: string | null
@@ -52,6 +54,7 @@ export type Database = {
           download_count?: number | null
           download_token?: string | null
           id?: string
+          lenco_reference?: string | null
           payment_method?: string
           status?: string
           transaction_id?: string | null
@@ -105,6 +108,51 @@ export type Database = {
           slug?: string
           subtitle?: string | null
           title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      donations: {
+        Row: {
+          amount: number
+          created_at: string
+          donor_email: string
+          donor_message: string | null
+          donor_name: string | null
+          donor_phone: string
+          id: string
+          lenco_reference: string | null
+          payment_method: string
+          status: string
+          transaction_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          donor_email: string
+          donor_message?: string | null
+          donor_name?: string | null
+          donor_phone: string
+          id?: string
+          lenco_reference?: string | null
+          payment_method: string
+          status?: string
+          transaction_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          donor_email?: string
+          donor_message?: string | null
+          donor_name?: string | null
+          donor_phone?: string
+          id?: string
+          lenco_reference?: string | null
+          payment_method?: string
+          status?: string
+          transaction_id?: string | null
           updated_at?: string
         }
         Relationships: []
