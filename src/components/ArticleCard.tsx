@@ -23,8 +23,8 @@ const ArticleCard = ({
     <a
       href={`/article/${id}`}
       className={[
-        "group block bg-card rounded-lg overflow-hidden",
-        "transition-all duration-300 hover:shadow-md",
+        "group block overflow-hidden",
+        "transition-all duration-300",
         size === "large" ? "col-span-1 md:col-span-2" : "",
       ].join(" ")}
     >
@@ -52,7 +52,7 @@ const ArticleCard = ({
       </div>
 
       {/* Content */}
-      <div className="p-4">
+      <div className="py-4">
         <h3
           className={[
             "text-foreground leading-tight",

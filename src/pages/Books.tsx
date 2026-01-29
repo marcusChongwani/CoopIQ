@@ -56,7 +56,7 @@ const Books = () => {
           </div>
         ) : (
           <>
-            <div className="space-y-6 mb-8">
+            <div className="space-y-6 grid grid-cols-1 md:grid-cols-2 mb-8">
               {data?.books.map((book) => (
                 <BookCard
                   key={book.id}

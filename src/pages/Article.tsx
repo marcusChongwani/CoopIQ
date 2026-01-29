@@ -71,7 +71,7 @@ const Article = () => {
           )}
         </div>
 
-        <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-32 relative z-10">
+        <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8  relative z-10">
           {/* Article Header */}
           <div className="mb-6 animate-slide-up">
             <div className="flex items-center gap-3 mb-6">
