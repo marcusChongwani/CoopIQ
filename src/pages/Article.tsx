@@ -49,14 +49,26 @@ const Article = () => {
           </a>
         </div>
 
-        {/* Hero Image */}
+        {/* Hero Video or Image */}
         <div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] mb-12">
-          <img
-            src={article.image}
-            alt={article.title}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+          {article.videoUrl ? (
+            <iframe
+              src={article.videoUrl}
+              title={article.title}
+              className="w-full h-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          ) : (
+            <>
+              <img
+                src={article.image}
+                alt={article.title}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+            </>
+          )}
         </div>
 
         <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-32 relative z-10">
