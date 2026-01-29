@@ -92,8 +92,9 @@ const Header = () => {
                 </Button>
                 {/* Mobile Dashboard button + menu for admin */}
                 <Link to="/admin" className="md:hidden">
-                  <Button variant="ghost" size="sm" className="rounded-full">
-                    <LayoutDashboard className="h-5 w-5" />
+                  <Button variant="ghost" size="sm" className="rounded-full gap-1.5">
+                    <LayoutDashboard className="h-4 w-4" />
+                    <span className="text-sm">Dashboard</span>
                   </Button>
                 </Link>
                 <button
