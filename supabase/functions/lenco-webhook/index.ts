@@ -37,13 +37,23 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const payload: LencoWebhookPayload = await req.json();
+    const payload = await req.json();
     console.log("Lenco webhook received:", JSON.stringify(payload));
 
     const { event, data } = payload;
     
+    // Only process collection events - ignore transaction events
+    if (!event?.startsWith("collection.")) {
+      console.log(`Ignoring non-collection event: ${event}`);
+      return new Response(
+        JSON.stringify({ success: true, message: "Event ignored" }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // For collection events, reference and status are required
     if (!data?.reference || !data?.status) {
-      console.error("Invalid webhook payload - missing reference or status");
+      console.error("Invalid collection payload - missing reference or status");
       return new Response(
         JSON.stringify({ success: false, error: "Invalid payload" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
