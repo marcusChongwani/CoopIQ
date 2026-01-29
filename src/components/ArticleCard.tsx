@@ -14,7 +14,6 @@ interface ArticleCardProps {
 const ArticleCard = ({
   id,
   title,
-  category,
   image,
   videoUrl,
   size = "small",
@@ -24,37 +23,36 @@ const ArticleCard = ({
     <a
       href={`/article/${id}`}
       className={[
-        "bg-white",
-        "transition-all duration-300",
+        "group block bg-card rounded-lg overflow-hidden",
+        "transition-all duration-300 hover:shadow-md",
         size === "large" ? "col-span-1 md:col-span-2" : "",
       ].join(" ")}
     >
-      {/* Thumbnail / Video */}
+      {/* Thumbnail with Play Overlay */}
       <div
         className={[
-          "bg-muted rounded-md overflow-hidden",
+          "relative bg-muted overflow-hidden",
           size === "large" ? "aspect-[16/8]" : "aspect-[16/9]",
         ].join(" ")}
       >
-        {videoUrl ? (
-          <iframe
-            src={videoUrl}
-            title={title}
-            className="h-full w-full"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
-        ) : (
-          <img
-            src={image}
-            alt={title}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-          />
+        <img
+          src={image}
+          alt={title}
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        
+        {/* Play button overlay for videos */}
+        {videoUrl && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
+            <div className="h-14 w-14 rounded-full bg-white/90 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Play className="w-6 h-6 text-foreground fill-foreground ml-1" />
+            </div>
+          </div>
         )}
       </div>
 
       {/* Content */}
-      <div className="py-4">
+      <div className="p-4">
         <h3
           className={[
             "text-foreground leading-tight",
@@ -65,7 +63,7 @@ const ArticleCard = ({
           {title}
         </h3>
 
-        <p className="mt-2 text-sm text-muted-foreground leading-relaxed line-clamp-1">
+        <p className="mt-2 text-sm text-muted-foreground leading-relaxed line-clamp-2">
           {subtitle}
         </p>
       </div>
