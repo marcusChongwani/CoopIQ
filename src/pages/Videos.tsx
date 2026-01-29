@@ -1,20 +1,46 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
-import ArticleCard from "@/components/ArticleCard";
+import VideoCard from "@/components/VideoCard";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { articles } from "@/data/articles";
+import { supabase } from "@/integrations/supabase/client";
 
 const ITEMS_PER_PAGE = 6;
 
 const Videos = () => {
   const [page, setPage] = useState(1);
 
-  const totalPages = Math.ceil(articles.length / ITEMS_PER_PAGE);
-  const paginatedVideos = articles.slice(
+  const { data: videos = [], isLoading } = useQuery({
+    queryKey: ["videos"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("videos")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const totalPages = Math.ceil(videos.length / ITEMS_PER_PAGE);
+  const paginatedVideos = videos.slice(
     (page - 1) * ITEMS_PER_PAGE,
     page * ITEMS_PER_PAGE
   );
+
+  // Extract YouTube video ID and create embed URL
+  const getYouTubeEmbedUrl = (url: string) => {
+    const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/);
+    return match ? `https://www.youtube.com/embed/${match[1]}` : url;
+  };
+
+  // Get thumbnail from YouTube URL
+  const getYouTubeThumbnail = (url: string) => {
+    const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/);
+    return match ? `https://img.youtube.com/vi/${match[1]}/maxresdefault.jpg` : "/placeholder.svg";
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -30,24 +56,25 @@ const Videos = () => {
           </p>
         </div>
 
-        {paginatedVideos.length === 0 ? (
+        {isLoading ? (
+          <div className="flex items-center justify-center py-16">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        ) : paginatedVideos.length === 0 ? (
           <div className="text-center py-16 text-muted-foreground">
             No videos available yet. Check back soon!
           </div>
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
-              {paginatedVideos.map((article) => (
-                <ArticleCard
-                  key={article.id}
-                  id={article.id}
-                  title={article.title}
-                  category={article.category}
-                  date={article.date}
-                  image={article.image}
-                  videoUrl={article.videoUrl}
-                  subtitle={article.subtitle}
-                  size="small"
+              {paginatedVideos.map((video) => (
+                <VideoCard
+                  key={video.id}
+                  title={video.title}
+                  description={video.description || video.subtitle || ""}
+                  thumbnail={video.thumbnail || getYouTubeThumbnail(video.youtube_url)}
+                  duration=""
+                  url={video.youtube_url}
                 />
               ))}
             </div>

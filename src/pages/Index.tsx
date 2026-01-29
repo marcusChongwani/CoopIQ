@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import ArticleCard from "@/components/ArticleCard";
 import BookCard from "@/components/BookCard";
@@ -38,12 +39,12 @@ const Index = () => {
         <section id="articles" className="py-6">
           <div className="flex items-center justify-between mb-6 animate-slide-up">
             <h2 className="text-2xl sm:text-3xl  font-bold tracking-tight">Featured Videos</h2>
-            <a
-              href="#all"
+            <Link
+              to="/videos"
               className="text-sm  border font-medium text-muted-foreground hover:text-accent transition-colors px-4 py-2 rounded-full hover:bg-muted/60"
             >
               View all 
-            </a>
+            </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -59,12 +60,12 @@ const Index = () => {
         <section id="books" className="py-12">
           <div className="flex items-center justify-between mb-6 animate-slide-up">
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Featured Books</h2>
-            <a
-              href="#all"
+            <Link
+              to="/books"
               className="text-sm border font-medium text-muted-foreground hover:text-accent transition-colors px-4 py-2 rounded-full hover:bg-muted/60"
             >
               View all
-            </a>
+            </Link>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -96,20 +97,20 @@ const Index = () => {
             On Zambia's economy, history and everyday realities.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-start sm:justify-center gap-3 sm:gap-4 animate-slide-up stagger-2">
-              <a href="/videos" className="w-full">
+              <Link to="/videos" className="w-full">
               <Button className="rounded-full  w-full px-6 sm:px-8 py-6 text-base font-medium">
                 <Play className="w-4 h-4 mr-2" />
                 Watch Videos
               </Button>
-              </a>
-              <a href="/books" className="w-full">
+              </Link>
+              <Link to="/books" className="w-full">
               <Button
                 variant="outline"
                 className="rounded-full  w-full px-6 sm:px-8 py-6 text-base font-medium"
               >
                 Explore Books
               </Button>
-              </a>
+              </Link>
             </div>
           </div>
         </section>
@@ -124,24 +125,24 @@ const Index = () => {
               <ul className="space-y-2 text-sm text-muted-foreground">
                 
                 <li>
-                  <a href="/contact" className="hover:text-accent transition-colors">
+                  <Link to="/contact" className="hover:text-accent transition-colors">
                     Contact
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="/donate" className="hover:text-accent transition-colors">
+                  <Link to="/donate" className="hover:text-accent transition-colors">
                     Donate
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="/donate" className="hover:text-accent transition-colors">
+                  <Link to="/donate" className="hover:text-accent transition-colors">
                     Advertise with us
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="/donate" className="hover:text-accent transition-colors">
+                  <Link to="/donate" className="hover:text-accent transition-colors">
                     How we make money
-                  </a>
+                  </Link>
                 </li>
                
               </ul>
@@ -150,15 +151,15 @@ const Index = () => {
               <h3 className="font-semibold mb-4">About</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>
-                  <a href="/about" className="hover:text-accent transition-colors">
+                  <Link to="/about" className="hover:text-accent transition-colors">
                     Our Story
-                  </a>
+                  </Link>
                 </li>
                 
                 <li>
-                  <a href="/contact" className="hover:text-accent transition-colors">
+                  <Link to="/contact" className="hover:text-accent transition-colors">
                     Contact
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -167,14 +168,14 @@ const Index = () => {
               <h3 className="font-semibold mb-4">Legal</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>
-                  <a href="/privacy" className="hover:text-accent transition-colors">
+                  <Link to="/privacy" className="hover:text-accent transition-colors">
                     Privacy Policy
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="/terms" className="hover:text-accent transition-colors">
+                  <Link to="/terms" className="hover:text-accent transition-colors">
                     Terms of Service
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
