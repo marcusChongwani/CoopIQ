@@ -83,82 +83,76 @@ const Donate = () => {
 
   const currentAmount = form.watch("amount");
 
-  const openLencoWidget = (data: DonationFormData) => {
+  const initiateDonation = async (data: DonationFormData) => {
     if (!lencoConfig?.publicKey) {
       toast.error("Payment service not available");
       return;
     }
 
-    const reference = `DONATION-${Date.now()}-${Math.random()
-      .toString(36)
-      .substring(2, 8)}`;
+    setIsProcessing(true);
+    const reference = `DONATION-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
 
-    // Persist minimal context so the status page can retry verification if needed.
     try {
-      sessionStorage.setItem(
-        `payment_meta_${reference}`,
-        JSON.stringify({
+      // Step 1: Create pending record in database FIRST
+      const { error: initError } = await supabase.functions.invoke("initiate-payment", {
+        body: {
           type: "donation",
+          reference,
           email: data.email,
           amount: data.amount,
           donorName: data.donorName,
           donorMessage: data.donorMessage,
-        })
-      );
-    } catch {
-      // ignore storage errors (private mode, etc.)
-    }
+        },
+      });
 
-    setIsProcessing(true);
+      if (initError) {
+        console.error("Failed to initiate donation:", initError);
+        toast.error("Failed to start donation. Please try again.");
+        setIsProcessing(false);
+        return;
+      }
 
-    window.LencoPay.getPaid({
-      key: lencoConfig.publicKey,
-      reference,
-      email: data.email,
-      amount: data.amount,
-      currency: "ZMW",
-      channels: ["mobile-money"],
-      label: "Donation to Depths of Zambia",
-      customer: data.donorName ? { firstName: data.donorName } : undefined,
-      onSuccess: async () => {
-        // IMPORTANT: always use the reference we passed into the widget.
-        console.log("Donation widget success - verifying:", reference);
+      console.log("Donation record created, opening widget:", reference);
 
-        try {
-          const { error } = await supabase.functions.invoke("verify-lenco-payment", {
-            body: {
-              reference,
-              type: "donation",
-              email: data.email,
-              donorName: data.donorName,
-              donorMessage: data.donorMessage,
-              amount: data.amount,
-            },
-          });
-          if (error) throw error;
-        } catch (err) {
-          console.error("Donation verification error:", err);
-          // Never block the user; the status page will keep polling.
-        } finally {
+      // Step 2: Open Lenco widget
+      window.LencoPay.getPaid({
+        key: lencoConfig.publicKey,
+        reference,
+        email: data.email,
+        amount: data.amount,
+        currency: "ZMW",
+        channels: ["mobile-money"],
+        label: "Donation to Depths of Zambia",
+        customer: data.donorName ? { firstName: data.donorName } : undefined,
+        onSuccess: () => {
+          console.log("Widget success callback - navigating to status page");
           setIsProcessing(false);
-          toast.success("Thank you! Checking donation status...");
+          toast.success("Donation initiated! Verifying...");
           navigate(`/donation-status/${reference}`, { replace: true });
-        }
-      },
-      onClose: () => {
-        setIsProcessing(false);
-        toast.info("Donation cancelled");
-      },
-      onConfirmationPending: () => {
-        setIsProcessing(false);
-        toast.info("Please complete the payment on your phone");
-        navigate(`/donation-status/${reference}`);
-      },
-    });
+        },
+        onClose: () => {
+          console.log("Widget closed");
+          setIsProcessing(false);
+          // Still navigate to status page - user may have completed payment on phone
+          toast.info("Checking donation status...");
+          navigate(`/donation-status/${reference}`);
+        },
+        onConfirmationPending: () => {
+          console.log("Confirmation pending - navigating to status page");
+          setIsProcessing(false);
+          toast.info("Complete the payment on your phone");
+          navigate(`/donation-status/${reference}`);
+        },
+      });
+    } catch (err) {
+      console.error("Donation initiation error:", err);
+      toast.error("Something went wrong. Please try again.");
+      setIsProcessing(false);
+    }
   };
 
   const onSubmit = (data: DonationFormData) => {
-    openLencoWidget(data);
+    initiateDonation(data);
   };
 
   return (
