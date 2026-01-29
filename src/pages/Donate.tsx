@@ -102,38 +102,11 @@ const Donate = () => {
       channels: ["mobile-money"],
       label: "Donation to Depths of Zambia",
       customer: data.donorName ? { firstName: data.donorName } : undefined,
-      onSuccess: async (response) => {
-        console.log("Donation successful:", response.reference);
-        
-        try {
-          const { data: verifyResult, error } = await supabase.functions.invoke(
-            "verify-lenco-payment",
-            {
-              body: {
-                reference: response.reference,
-                type: "donation",
-                email: data.email,
-                donorName: data.donorName,
-                donorMessage: data.donorMessage,
-              },
-            }
-          );
-
-          if (error) throw error;
-
-          if (verifyResult?.success) {
-            toast.success("Thank you for your donation!");
-            navigate(`/donation-status/${response.reference}?success=true`);
-          } else {
-            toast.error("Donation verification failed. Please contact support.");
-            navigate(`/donation-status/${response.reference}`);
-          }
-        } catch (err) {
-          console.error("Verification error:", err);
-          toast.error("Could not verify donation. Please contact support.");
-        } finally {
-          setIsProcessing(false);
-        }
+      onSuccess: (response) => {
+        console.log("Donation widget success - redirecting:", response.reference);
+        setIsProcessing(false);
+        toast.success("Thank you for your donation!");
+        navigate(`/donation-status/${response.reference}`);
       },
       onClose: () => {
         setIsProcessing(false);
