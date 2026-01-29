@@ -122,9 +122,17 @@ const BookPayment = () => {
       channels: ["mobile-money"],
       label: book.title,
       onSuccess: async (response) => {
-        console.log("Payment successful:", response.reference);
+        console.log("Lenco widget onSuccess - reference:", response.reference);
         
         try {
+          console.log("Calling verify-lenco-payment with:", {
+            reference: response.reference,
+            type: "book",
+            bookId: book.id,
+            email: data.email,
+            amount: data.amount,
+          });
+          
           const { data: verifyResult, error } = await supabase.functions.invoke(
             "verify-lenco-payment",
             {
@@ -138,18 +146,25 @@ const BookPayment = () => {
             }
           );
 
-          if (error) throw error;
+          console.log("Verification result:", verifyResult, "Error:", error);
+
+          if (error) {
+            console.error("Supabase invoke error:", error);
+            throw error;
+          }
 
           if (verifyResult?.success && verifyResult?.downloadToken) {
             toast.success("Payment successful!");
             navigate(`/download/${verifyResult.downloadToken}`);
           } else {
-            toast.error("Payment verification failed. Please contact support.");
+            console.log("Verification not successful, navigating to status page");
+            toast.info("Payment processing. Redirecting to status page...");
             navigate(`/payment-status/${response.reference}`);
           }
         } catch (err) {
           console.error("Verification error:", err);
-          toast.error("Could not verify payment. Please contact support.");
+          toast.info("Payment received. Checking status...");
+          navigate(`/payment-status/${response.reference}`);
         } finally {
           setIsProcessing(false);
         }
