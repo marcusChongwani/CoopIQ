@@ -24,6 +24,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Pencil, Trash2, Upload, FileText, Image, Loader2 } from 'lucide-react';
 import { Tables } from '@/integrations/supabase/types';
+import TableSkeleton from '@/components/TableSkeleton';
 
 type Book = Tables<'books'>;
 
@@ -361,9 +362,7 @@ export default function AdminBooks() {
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
+        <TableSkeleton columns={6} rows={4} showImage />
       ) : (
         <div className="overflow-x-auto -mx-4 lg:mx-0">
           <div className="inline-block min-w-full align-middle px-4 lg:px-0">

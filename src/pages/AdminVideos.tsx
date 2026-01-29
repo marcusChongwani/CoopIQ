@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
+import TableSkeleton from '@/components/TableSkeleton';
 
 interface Video {
   id: string;
@@ -257,9 +258,7 @@ export default function AdminVideos() {
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
+        <TableSkeleton columns={3} rows={4} />
       ) : (
         <div className="overflow-x-auto -mx-4 lg:mx-0">
           <div className="inline-block min-w-full align-middle px-4 lg:px-0">
