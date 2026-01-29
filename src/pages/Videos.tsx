@@ -77,7 +77,6 @@ const Videos = () => {
                   videoUrl={getYouTubeEmbedUrl(video.youtube_url)}
                   subtitle={video.subtitle || video.description || ""}
                   size="small"
-                  linkPrefix="/video"
                 />
               ))}
             </div>
