@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -22,7 +22,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, Upload, FileText, Image, Loader2 } from 'lucide-react';
 import { Tables } from '@/integrations/supabase/types';
 
 type Book = Tables<'books'>;
@@ -33,6 +33,8 @@ interface BookFormData {
   description: string;
   price: number;
   featured: boolean;
+  cover_image: string;
+  file_path: string;
 }
 
 const initialFormData: BookFormData = {
@@ -41,6 +43,8 @@ const initialFormData: BookFormData = {
   description: '',
   price: 10,
   featured: false,
+  cover_image: '',
+  file_path: '',
 };
 
 const generateSlug = (title: string) => {
@@ -54,6 +58,10 @@ export default function AdminBooks() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBook, setEditingBook] = useState<Book | null>(null);
   const [formData, setFormData] = useState<BookFormData>(initialFormData);
+  const [isUploadingCover, setIsUploadingCover] = useState(false);
+  const [isUploadingPdf, setIsUploadingPdf] = useState(false);
+  const coverInputRef = useRef<HTMLInputElement>(null);
+  const pdfInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -68,6 +76,52 @@ export default function AdminBooks() {
       return data;
     },
   });
+
+  const uploadCoverImage = async (file: File) => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${crypto.randomUUID()}.${fileExt}`;
+    
+    setIsUploadingCover(true);
+    try {
+      const { error: uploadError } = await supabase.storage
+        .from('book-covers')
+        .upload(fileName, file);
+      
+      if (uploadError) throw uploadError;
+      
+      const { data: { publicUrl } } = supabase.storage
+        .from('book-covers')
+        .getPublicUrl(fileName);
+      
+      setFormData(prev => ({ ...prev, cover_image: publicUrl }));
+      toast({ title: 'Cover image uploaded successfully' });
+    } catch (error: any) {
+      toast({ title: 'Error uploading cover image', description: error.message, variant: 'destructive' });
+    } finally {
+      setIsUploadingCover(false);
+    }
+  };
+
+  const uploadPdfFile = async (file: File) => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${crypto.randomUUID()}.${fileExt}`;
+    
+    setIsUploadingPdf(true);
+    try {
+      const { error: uploadError } = await supabase.storage
+        .from('book-files')
+        .upload(fileName, file);
+      
+      if (uploadError) throw uploadError;
+      
+      setFormData(prev => ({ ...prev, file_path: fileName }));
+      toast({ title: 'PDF file uploaded successfully' });
+    } catch (error: any) {
+      toast({ title: 'Error uploading PDF file', description: error.message, variant: 'destructive' });
+    } finally {
+      setIsUploadingPdf(false);
+    }
+  };
 
   const createMutation = useMutation({
     mutationFn: async (data: BookFormData & { slug: string }) => {
@@ -140,6 +194,8 @@ export default function AdminBooks() {
       description: book.description || '',
       price: book.price,
       featured: book.featured,
+      cover_image: book.cover_image || '',
+      file_path: book.file_path || '',
     });
     setIsDialogOpen(true);
   };
@@ -152,7 +208,6 @@ export default function AdminBooks() {
       createMutation.mutate({ ...formData, slug: generateSlug(formData.title) });
     }
   };
-
 
   return (
     <div>
@@ -207,6 +262,83 @@ export default function AdminBooks() {
                   required
                 />
               </div>
+              
+              {/* Cover Image Upload */}
+              <div className="space-y-2">
+                <Label>Cover Image</Label>
+                <input
+                  ref={coverInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) uploadCoverImage(file);
+                  }}
+                />
+                <div className="flex items-center gap-3">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => coverInputRef.current?.click()}
+                    disabled={isUploadingCover}
+                  >
+                    {isUploadingCover ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Image className="mr-2 h-4 w-4" />
+                    )}
+                    {isUploadingCover ? 'Uploading...' : 'Upload Cover'}
+                  </Button>
+                  {formData.cover_image && (
+                    <div className="flex items-center gap-2">
+                      <img 
+                        src={formData.cover_image} 
+                        alt="Cover preview" 
+                        className="h-12 w-12 object-cover rounded"
+                      />
+                      <span className="text-sm text-muted-foreground">Cover uploaded</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* PDF File Upload */}
+              <div className="space-y-2">
+                <Label>Book PDF File</Label>
+                <input
+                  ref={pdfInputRef}
+                  type="file"
+                  accept=".pdf"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) uploadPdfFile(file);
+                  }}
+                />
+                <div className="flex items-center gap-3">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => pdfInputRef.current?.click()}
+                    disabled={isUploadingPdf}
+                  >
+                    {isUploadingPdf ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <FileText className="mr-2 h-4 w-4" />
+                    )}
+                    {isUploadingPdf ? 'Uploading...' : 'Upload PDF'}
+                  </Button>
+                  {formData.file_path && (
+                    <span className="text-sm text-muted-foreground flex items-center gap-1">
+                      <FileText className="h-4 w-4" />
+                      PDF uploaded
+                    </span>
+                  )}
+                </div>
+              </div>
+
               <div className="flex items-center space-x-2">
                 <Switch
                   id="featured"
@@ -219,7 +351,7 @@ export default function AdminBooks() {
                 <Button type="button" variant="outline" onClick={closeDialog}>
                   Cancel
                 </Button>
-                <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>
+                <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending || isUploadingCover || isUploadingPdf}>
                   {editingBook ? 'Update' : 'Create'}
                 </Button>
               </div>
@@ -236,8 +368,10 @@ export default function AdminBooks() {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>Cover</TableHead>
               <TableHead>Title</TableHead>
               <TableHead>Price</TableHead>
+              <TableHead>PDF</TableHead>
               <TableHead>Featured</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -245,8 +379,26 @@ export default function AdminBooks() {
           <TableBody>
             {books?.map((book) => (
               <TableRow key={book.id}>
+                <TableCell>
+                  {book.cover_image ? (
+                    <img src={book.cover_image} alt={book.title} className="h-12 w-10 object-cover rounded" />
+                  ) : (
+                    <div className="h-12 w-10 bg-muted rounded flex items-center justify-center">
+                      <Image className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                  )}
+                </TableCell>
                 <TableCell className="font-medium">{book.title}</TableCell>
                 <TableCell>K{book.price}</TableCell>
+                <TableCell>
+                  {book.file_path ? (
+                    <span className="text-primary flex items-center gap-1">
+                      <FileText className="h-4 w-4" /> Yes
+                    </span>
+                  ) : (
+                    <span className="text-muted-foreground">No</span>
+                  )}
+                </TableCell>
                 <TableCell>
                   <Switch
                     checked={book.featured}
