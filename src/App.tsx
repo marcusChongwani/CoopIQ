@@ -17,6 +17,8 @@ import Authors from "./pages/Authors";
 import Contact from "./pages/Contact";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
+import HowWeMakeMoney from "./pages/HowWeMakeMoney";
+import AdvertiseWithUs from "./pages/AdvertiseWithUs";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
 import AdminLogin from "./pages/AdminLogin";
@@ -52,6 +54,8 @@ const App = () => (
             <Route path="/contact" element={<Contact />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
+            <Route path="/how-we-make-money" element={<HowWeMakeMoney />} />
+            <Route path="/advertise" element={<AdvertiseWithUs />} />
             {/* Admin Routes */}
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<Admin />}>
