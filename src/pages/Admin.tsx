@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate, Outlet, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
-import { BookOpen, Video, LogOut, LayoutDashboard } from 'lucide-react';
+import { BookOpen, Video, LogOut, LayoutDashboard, Home } from 'lucide-react';
 
 export default function Admin() {
   const { user, isAdmin, loading, signOut } = useAuth();
@@ -75,6 +75,18 @@ export default function Admin() {
               Videos
             </Button>
           </Link>
+          
+          <div className="pt-4 border-t border-border mt-4">
+            <Link to="/">
+              <Button
+                variant="ghost"
+                className="w-full justify-start"
+              >
+                <Home className="mr-2 h-4 w-4" />
+                Back to Main Site
+              </Button>
+            </Link>
+          </div>
         </nav>
         <div className="absolute bottom-0 left-0 w-64 p-4 border-t">
           <Button

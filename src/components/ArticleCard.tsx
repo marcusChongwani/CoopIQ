@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Play } from "lucide-react";
 
 interface ArticleCardProps {
@@ -20,8 +21,8 @@ const ArticleCard = ({
   subtitle = "The deeper story of Zambia's debt trap with China.",
 }: ArticleCardProps) => {
   return (
-    <a
-      href={`/article/${id}`}
+    <Link
+      to={`/article/${id}`}
       className={[
         "group block overflow-hidden",
         "transition-all duration-300",
@@ -67,7 +68,7 @@ const ArticleCard = ({
           {subtitle}
         </p>
       </div>
-    </a>
+    </Link>
   );
 };
 
