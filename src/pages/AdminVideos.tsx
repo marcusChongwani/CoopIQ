@@ -22,7 +22,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search } from 'lucide-react';
 import TableSkeleton from '@/components/TableSkeleton';
 
 interface Video {
@@ -60,6 +60,7 @@ export default function AdminVideos() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingVideo, setEditingVideo] = useState<Video | null>(null);
   const [formData, setFormData] = useState<VideoFormData>(initialFormData);
+  const [searchQuery, setSearchQuery] = useState('');
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -168,16 +169,32 @@ export default function AdminVideos() {
     return '';
   };
 
+  const filteredVideos = videos?.filter((video) =>
+    video.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    video.subtitle?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    video.description?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <h1 className="text-3xl font-bold">Videos</h1>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={() => { setEditingVideo(null); setFormData(initialFormData); }}>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Video
-            </Button>
+        <div className="flex items-center gap-3">
+          <div className="relative flex-1 sm:flex-none">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search videos..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 w-full sm:w-64"
+            />
+          </div>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button onClick={() => { setEditingVideo(null); setFormData(initialFormData); }}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Video
+              </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
@@ -255,6 +272,7 @@ export default function AdminVideos() {
             </form>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       {isLoading ? (
@@ -271,7 +289,7 @@ export default function AdminVideos() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {videos?.map((video) => (
+                {filteredVideos?.map((video) => (
                   <TableRow key={video.id}>
                     <TableCell className="font-medium whitespace-nowrap">{video.title}</TableCell>
                     <TableCell>
