@@ -30,17 +30,44 @@ const DonationSection = () => {
           <p className="font-medium text-white">Every contribution helps.</p>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 mb-6">
-          {donationAmounts.map((item) => (
-            <Link
-              key={item.amount}
-              to="/donate"
-              className="bg-white hover:bg-gray-100 transition-colors rounded-full py-3 text-center font-bold text-lg text-foreground"
-            >
-              {item.amount}
-            </Link>
-          ))}
-        </div>
+        <div className="grid grid-cols-2 gap-4 mb-6">
+  {donationAmounts.map((item) => (
+    <Link
+      key={item.amount}
+      to="/donate"
+      className="
+        relative
+        inline-flex items-center justify-center
+        rounded-full
+        px-8 py-4
+        text-lg font-semibold text-foreground
+        bg-gradient-to-b from-white via-white/90 to-gray-200
+        shadow-[0_8px_20px_rgba(0,0,0,0.12)]
+        transition-all duration-200
+        hover:-translate-y-0.5
+        hover:shadow-[0_12px_28px_rgba(0,0,0,0.16)]
+        active:translate-y-0
+      "
+    >
+      {/* glossy highlight */}
+      <span
+        className="
+          pointer-events-none
+          absolute top-1 left-1/2 -translate-x-1/2
+          h-1/3 w-[90%]
+          rounded-full
+          bg-white/70
+          blur-sm
+        "
+      />
+
+      {item.amount}
+    </Link>
+  ))}
+</div>
+
+
+
 
         <p className="text-sm text-white text-center">
           Donations are optional and support independent media.
