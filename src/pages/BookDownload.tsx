@@ -21,8 +21,12 @@ const BookDownload = () => {
   });
 
   const handleDownload = () => {
-    if (!data?.downloadUrl) return;
-    window.open(data.downloadUrl, "_blank");
+    if (!token) return;
+
+    const fnUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/download-book?token=${token}`;
+  
+    // use same tab so mobile triggers download properly
+    window.location.href = fnUrl
   };
 
   if (isLoading) {

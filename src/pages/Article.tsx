@@ -175,15 +175,16 @@ const Article = () => {
           </Link>
         </div>
 
-        <div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] mb-12">
+        <div className="relative w-full aspect-video mb-12">
           <iframe
             src={getYouTubeEmbedUrl(video.youtube_url)}
             title={video.title}
-            className="w-full h-full"
+            className="absolute inset-0 w-full h-full"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
           />
         </div>
+
 
         <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="mb-6 animate-slide-up">
@@ -204,8 +205,8 @@ const Article = () => {
 
           <div className="prose prose-lg max-w-none mb-16 animate-slide-up stagger-2">
             {video.description && (
-              <ExpandableDescription 
-                text={video.description} 
+              <ExpandableDescription
+                text={video.description}
                 collapsedHeight={120}
                 className="mb-8"
               />

@@ -17,8 +17,8 @@ const IntroSection = () => {
         everyday realities.
       </p>
 
-      <div className="flex flex-row sm:flex-row items-center justify-start sm:justify-center gap-3 sm:gap-4 animate-slide-up stagger-2">
-        <Button asChild className="rounded-md px-6 sm:px-8 py-6 text-base font-medium">
+      <div className="flex flex-col sm:flex-row items-center justify-start sm:justify-center gap-3 sm:gap-4 animate-slide-up stagger-2">
+        <Button asChild className="rounded-md w-full sm:w-auto px-6 sm:px-8 py-6 text-base font-medium">
           <Link to="/videos">
             <Play className="w-4 h-4 mr-2" />
             Watch Videos
@@ -28,7 +28,7 @@ const IntroSection = () => {
         <Button
           asChild
           variant="outline"
-          className="rounded-md px-6 sm:px-8 py-6 text-base font-medium"
+          className="rounded-md px-6 w-full sm:w-auto sm:px-8 py-6 text-base font-medium"
         >
           <Link to="/books">Explore Books</Link>
         </Button>

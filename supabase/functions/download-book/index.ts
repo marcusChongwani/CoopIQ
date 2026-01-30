@@ -1,0 +1,98 @@
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+function safeFilename(name: string) {
+  return (name || "book")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+
+  try {
+    const url = new URL(req.url);
+    const token = url.searchParams.get("token");
+    if (!token) {
+      return new Response(JSON.stringify({ error: "Missing token" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, serviceRoleKey);
+
+    // 1) Validate token + purchase status, get book file_path
+    const { data: purchase, error: purchaseErr } = await supabase
+      .from("book_purchases")
+      .select("id, status, download_token, amount, books(title, file_path)")
+      .eq("download_token", token)
+      .maybeSingle();
+
+    if (purchaseErr) throw purchaseErr;
+    if (!purchase) {
+      return new Response(JSON.stringify({ error: "Invalid or expired link" }), {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (purchase.status !== "completed") {
+      return new Response(JSON.stringify({ error: "Payment not completed" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const book = purchase.books as { title: string; file_path: string } | null;
+    if (!book?.file_path) {
+      return new Response(JSON.stringify({ error: "File path missing on book" }), {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // 2) Download from Storage (CHANGE BUCKET NAME HERE if yours is different)
+    const BUCKET = "books";
+
+    const { data: fileBlob, error: dlErr } = await supabase.storage
+      .from(BUCKET)
+      .download(book.file_path);
+
+    if (dlErr) throw dlErr;
+    if (!fileBlob) throw new Error("No file returned");
+
+    const buf = await fileBlob.arrayBuffer();
+    const filename = `${safeFilename(book.title)}.pdf`;
+
+    // Optional: increment download count
+    await supabase
+      .from("book_purchases")
+      .update({ download_count: (purchase as any).download_count ? (purchase as any).download_count + 1 : 1 })
+      .eq("id", purchase.id);
+
+    // 3) Force download
+    return new Response(buf, {
+      status: 200,
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment; filename="${filename}"`,
+        "Cache-Control": "no-store",
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    return new Response(JSON.stringify({ error: "Server error" }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+});

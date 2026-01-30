@@ -186,7 +186,7 @@ function DonationsTab() {
             <TableBody>
               {filtered.map((donation) => (
                 <TableRow key={donation.id} className="hover:bg-muted/30">
-                  <TableCell className="text-sm text-muted-foreground">
+                  <TableCell className="text-sm text-nowrap text-muted-foreground">
                     {format(new Date(donation.created_at), "MMM d, yyyy")}
                   </TableCell>
 
@@ -224,7 +224,7 @@ function DonationsTab() {
                     <StatusBadge status={donation.status} />
                   </TableCell>
 
-                  <TableCell className="text-xs text-muted-foreground font-mono hidden lg:table-cell">
+                  <TableCell className="text-xs text-nowrap text-muted-foreground font-mono hidden lg:table-cell">
                     {donation.transaction_id || "-"}
                   </TableCell>
                 </TableRow>
@@ -305,7 +305,7 @@ function BookPaymentsTab() {
             <TableBody>
               {filtered.map((purchase) => (
                 <TableRow key={purchase.id} className="hover:bg-muted/30">
-                  <TableCell className="text-sm text-muted-foreground">
+                  <TableCell className="text-sm text-nowrap text-muted-foreground">
                     {format(new Date(purchase.created_at), "MMM d, yyyy")}
                   </TableCell>
 
@@ -334,7 +334,7 @@ function BookPaymentsTab() {
                     <StatusBadge status={purchase.status} />
                   </TableCell>
 
-                  <TableCell className="text-xs text-muted-foreground font-mono hidden lg:table-cell">
+                  <TableCell className="text-xs text-nowrap  text-muted-foreground font-mono hidden lg:table-cell">
                     {purchase.transaction_id || "-"}
                   </TableCell>
                 </TableRow>
