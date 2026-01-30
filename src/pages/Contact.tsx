@@ -7,6 +7,7 @@ import { Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Link } from "react-router-dom";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 8 },
@@ -69,88 +70,84 @@ const Contact = () => {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1 }}
-        >
-          <div className="rounded-2xl bg-card p-8 md:p-12">
-            <div className="flex items-center gap-4 mb-8">
-              <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                <Mail className="w-6 h-6 text-primary" />
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold">Send us a message</h2>
-                <p className="text-sm text-muted-foreground">We'll respond as soon as possible</p>
-              </div>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium mb-2">
-                  Your name
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring"
-                  placeholder="Enter your name"
-                  required
-                />
-              </div>
-
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium mb-2">
-                  Email address
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring"
-                  placeholder="you@example.com"
-                  required
-                />
-              </div>
-
-              <div>
-                <label htmlFor="subject" className="block text-sm font-medium mb-2">
-                  Subject
-                </label>
-                <input
-                  type="text"
-                  id="subject"
-                  name="subject"
-                  value={formData.subject}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring"
-                  placeholder="What's this about?"
-                  required
-                />
-              </div>
-
-              <div>
-                <label htmlFor="message" className="block text-sm font-medium mb-2">
-                  Message
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  rows={5}
-                  className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring resize-none"
-                  placeholder="Tell us what you're thinking..."
-                  required
-                />
-              </div>
-
-              <Button type="submit" className="w-full rounded-xl py-6 text-base font-medium">
-                Send Message
-              </Button>
-            </form>
+        ><motion.section
+        className="max-w-xl mx-auto"
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+      >
+        <div className="">
+          <h2 className="text-xl font-semibold tracking-tight">Message us</h2>
+          <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+            For the fastest reply, use WhatsApp. If you prefer email, that works too.
+          </p>
+      
+          {/* Quick actions */}
+          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <Link
+              to="https://wa.me/message/GR7WX3OGSIXEF1"
+              target="_blank"
+              rel="noreferrer"
+              className="
+                rounded-2xl bg-primary text-white border border-border px-5 py-4
+                hover:bg-primary/80 transition-colors
+              "
+            >
+              <p className="text-sm font-semibold">WhatsApp</p>
+              <p className="text-xs  mt-1">
+                Quickest support & questions
+              </p>
+            </Link>
+      
+            <a
+              href="mailto:depthsofzambia@gmail.com?subject=Hello%20Depths%20of%20Zambia"
+              className="
+                rounded-2xl bg-background border border-border px-5 py-4
+                hover:bg-muted/50 transition-colors
+              "
+            >
+              <p className="text-sm font-semibold flex items-center gap-2">
+                <Mail className="w-4 h-4" />
+                Email
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+              depthsofzambia@gmail.com
+              </p>
+            </a>
           </div>
+      
+          {/* What can we help with */}
+          <div className="mt-8">
+            <p className="text-sm font-semibold mb-3">What can we help with?</p>
+      
+            <div className="flex flex-wrap gap-2">
+              {[
+                "Collaboration",
+                "Suggest a topic",
+                "Report an issue",
+                "Book purchase help",
+                "General feedback",
+              ].map((t) => (
+                <span
+                  key={t}
+                  className="px-4 py-2 rounded-full bg-muted/50 text-sm text-foreground"
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          </div>
+      
+          {/* Expectations */}
+          <div className="mt-8 pt-6 border-t border-border">
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Typical response time: <span className="text-foreground font-medium">within 24 hours</span>.
+              Please don’t share sensitive payment info (PINs or passwords).
+            </p>
+          </div>
+        </div>
+      </motion.section>
+      
         </motion.section>
       </main>
 
