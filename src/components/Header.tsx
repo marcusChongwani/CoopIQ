@@ -176,14 +176,21 @@ const Header = () => {
               </>
             ) : (
               <>
-                {/* Mobile Menu Button for public */}
-                <button
-                  className="md:hidden p-1.5 sm:p-2"
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  aria-label="Toggle menu"
-                >
-                  {isMenuOpen ? <X className="h-5 w-5 sm:h-6 sm:w-6" /> : <Menu className="h-5 w-5 sm:h-6 sm:w-6" />}
-                </button>
+                <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+                  <Link to="/donate">
+                    <Button variant="outline" size="sm" className="rounded-full hidden sm:flex" onClick={handleSignOut}>
+                      Donate
+                    </Button>
+                  </Link>
+                  {/* Mobile Menu Button for public */}
+                  <button
+                    className="md:hidden p-1.5 sm:p-2"
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    aria-label="Toggle menu"
+                  >
+                    {isMenuOpen ? <X className="h-5 w-5 sm:h-6 sm:w-6" /> : <Menu className="h-5 w-5 sm:h-6 sm:w-6" />}
+                  </button>
+                </div>
               </>
             )}
           </div>
