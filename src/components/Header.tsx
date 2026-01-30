@@ -178,7 +178,12 @@ const Header = () => {
               <>
                 <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
                   <Link to="/donate">
-                    <Button variant="outline" size="sm" className="rounded-full sm:hidden" onClick={handleSignOut}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="bg-primary hover:bg-primary/90 text-primary-foreground  rounded-full sm:hidden"
+                      onClick={handleSignOut}
+                    >
                       Donate
                     </Button>
                   </Link>
