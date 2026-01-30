@@ -1,4 +1,7 @@
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
+import JsonLd, { createBreadcrumbSchema } from "@/components/JsonLd";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Film, Play, Mic, Users, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -42,7 +45,18 @@ const AdvertiseWithUs = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background animate-fade-in">
+    <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Advertise With Us"
+        description="Partner with Depths of Zambia for video-based advertising and brand storytelling to reach an engaged, thoughtful audience."
+        canonical="/advertise"
+      />
+      <JsonLd
+        data={createBreadcrumbSchema([
+          { name: "Home", url: "/" },
+          { name: "Advertise With Us" },
+        ])}
+      />
       <Header />
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -134,6 +148,8 @@ const AdvertiseWithUs = () => {
           </Link>
         </motion.div>
       </main>
+
+      <Footer />
     </div>
   );
 };

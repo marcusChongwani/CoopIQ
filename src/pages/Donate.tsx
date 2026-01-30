@@ -5,6 +5,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
+import JsonLd, { createBreadcrumbSchema } from "@/components/JsonLd";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -93,7 +96,6 @@ const Donate = () => {
     const reference = `DONATION-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
 
     try {
-      // Step 1: Create pending record in database FIRST
       const { error: initError } = await supabase.functions.invoke("initiate-payment", {
         body: {
           type: "donation",
@@ -114,7 +116,6 @@ const Donate = () => {
 
       console.log("Donation record created, opening widget:", reference);
 
-      // Step 2: Open Lenco widget
       window.LencoPay.getPaid({
         key: lencoConfig.publicKey,
         reference,
@@ -133,7 +134,6 @@ const Donate = () => {
         onClose: () => {
           console.log("Widget closed");
           setIsProcessing(false);
-          // Still navigate to status page - user may have completed payment on phone
           toast.info("Checking donation status...");
           navigate(`/donation-status/${reference}`);
         },
@@ -156,10 +156,21 @@ const Donate = () => {
   };
 
   return (
-    <div className="bg-background animate-fade-in">
+    <div className="min-h-screen bg-background flex flex-col">
+      <SEOHead
+        title="Donate"
+        description="Support Depths of Zambia's mission to create independent, research-driven content about Zambia."
+        canonical="/donate"
+      />
+      <JsonLd
+        data={createBreadcrumbSchema([
+          { name: "Home", url: "/" },
+          { name: "Donate" },
+        ])}
+      />
       <Header />
 
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center justify-between mb-6">
           <Link
             to="/"
@@ -186,7 +197,6 @@ const Donate = () => {
               </p>
             </div>
 
-            {/* Preset amounts */}
             <div className="mb-6">
               <p className="text-sm font-medium mb-2">Select amount</p>
               <div className="grid grid-cols-5 gap-2">
@@ -365,6 +375,8 @@ const Donate = () => {
           </aside>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 };

@@ -1,4 +1,7 @@
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
+import JsonLd, { createBreadcrumbSchema } from "@/components/JsonLd";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Megaphone, Heart, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,7 +22,18 @@ const staggerContainer = {
 
 const HowWeMakeMoney = () => {
   return (
-    <div className="min-h-screen bg-background animate-fade-in">
+    <div className="min-h-screen bg-background">
+      <SEOHead
+        title="How We Make Money"
+        description="Learn how Depths of Zambia sustains its work through advertising, donations, and ebook sales while maintaining editorial independence."
+        canonical="/how-we-make-money"
+      />
+      <JsonLd
+        data={createBreadcrumbSchema([
+          { name: "Home", url: "/" },
+          { name: "How We Make Money" },
+        ])}
+      />
       <Header />
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -140,6 +154,8 @@ const HowWeMakeMoney = () => {
           </p>
         </motion.div>
       </main>
+
+      <Footer />
     </div>
   );
 };
