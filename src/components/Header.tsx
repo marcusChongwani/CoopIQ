@@ -47,6 +47,10 @@ const Header = () => {
       to: "/books",
       label: "Books",
     },
+    {
+      to: "/about",
+      label: "About",
+    },
   ];
   const moreLinks = [
     {
