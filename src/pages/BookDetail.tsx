@@ -1,6 +1,7 @@
 import { useParams, Navigate, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
+import ExpandableDescription from "@/components/ExpandableDescription";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ShoppingCart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -123,11 +124,10 @@ const BookDetail = () => {
               </h1>
 
               {book.description && (
-                <div className="prose prose-lg max-w-none">
-                  <p className="text-muted-foreground leading-relaxed">
-                    {book.description}
-                  </p>
-                </div>
+                <ExpandableDescription 
+                  text={book.description} 
+                  collapsedHeight={100}
+                />
               )}
             </div>
 

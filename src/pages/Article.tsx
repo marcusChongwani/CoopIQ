@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import ArticleCard from "@/components/ArticleCard";
+import ExpandableDescription from "@/components/ExpandableDescription";
 import { Link2, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 
@@ -197,9 +198,11 @@ const Article = () => {
           {/* Article Content */}
           <div className="prose prose-lg max-w-none mb-16 animate-slide-up stagger-2">
             {video.description && (
-              <p className="text-lg leading-relaxed text-muted-foreground mb-8">
-                {video.description}
-              </p>
+              <ExpandableDescription 
+                text={video.description} 
+                collapsedHeight={120}
+                className="mb-8"
+              />
             )}
           </div>
 
