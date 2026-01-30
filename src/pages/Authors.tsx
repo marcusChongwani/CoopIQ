@@ -1,5 +1,14 @@
+import { motion } from "framer-motion";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
+import JsonLd, { createBreadcrumbSchema } from "@/components/JsonLd";
 import { Mail, Instagram, Twitter } from "lucide-react";
+
+const fadeIn = {
+  hidden: { opacity: 0, y: 8 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.25, 0.1, 0.25, 1] } },
+} as const;
 
 const Authors = () => {
   const authors = [
@@ -34,25 +43,47 @@ const Authors = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background animate-fade-in">
+    <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Authors"
+        description="Meet the team behind Depths of Zambia — experienced writers, researchers, and storytellers."
+        canonical="/authors"
+      />
+      <JsonLd
+        data={createBreadcrumbSchema([
+          { name: "Home", url: "/" },
+          { name: "Authors" },
+        ])}
+      />
       <Header />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Hero Section */}
-        <div className="mb-16 text-center space-y-6">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight animate-slide-down">
+        <motion.div
+          className="mb-16 text-center space-y-6"
+          initial="hidden"
+          animate="visible"
+          variants={fadeIn}
+        >
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
             Meet Our Authors
           </h1>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed animate-slide-up stagger-1">
-            The voices behind Perspective—experienced writers, practitioners, and thoughtful explorers 
-            who bring diverse perspectives and genuine insights to every article.
+          <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            The voices behind Depths of Zambia — experienced writers, practitioners, and thoughtful explorers 
+            who bring diverse perspectives and genuine insights to every piece.
           </p>
-        </div>
+        </motion.div>
 
         {/* Authors Grid */}
         <section className="grid md:grid-cols-2 gap-8 mb-16">
           {authors.map((author, index) => (
-            <div key={author.name} className={`rounded-2xl bg-card p-8 hover:shadow-xl transition-all duration-300 animate-slide-up stagger-${Math.min(index + 2, 6)}`}>
+            <motion.div
+              key={author.name}
+              className="rounded-2xl bg-card p-8 hover:shadow-xl transition-all duration-300"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
+            >
               <div className="flex items-start gap-6 mb-6">
                 <img
                   src={author.image}
@@ -91,16 +122,21 @@ const Authors = () => {
                   <Instagram className="w-4 h-4" />
                 </a>
               </div>
-            </div>
+            </motion.div>
           ))}
         </section>
 
         {/* Join Section */}
-        <section className="text-center py-12 rounded-2xl bg-muted">
+        <motion.section
+          className="text-center py-12 rounded-2xl bg-muted"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.4 }}
+        >
           <h2 className="text-3xl font-bold mb-4">Want to Contribute?</h2>
           <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
             We're always looking for thoughtful voices to join our community. If you have insights 
-            to share on wellness, travel, creativity, or personal growth, we'd love to hear from you.
+            to share on Zambia's economy, history, or culture, we'd love to hear from you.
           </p>
           <a
             href="/contact"
@@ -108,8 +144,10 @@ const Authors = () => {
           >
             Get in Touch
           </a>
-        </section>
+        </motion.section>
       </main>
+
+      <Footer />
     </div>
   );
 };

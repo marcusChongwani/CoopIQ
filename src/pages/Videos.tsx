@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
+import JsonLd, { createBreadcrumbSchema } from "@/components/JsonLd";
 import ArticleCard from "@/components/ArticleCard";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -16,22 +19,18 @@ const VideoCardSkeleton = ({ size = "small" }: { size?: "small" | "large" }) => 
         size === "large" ? "col-span-1 md:col-span-2" : "",
       ].join(" ")}
     >
-      {/* Thumbnail */}
       <div
         className={[
           "relative bg-muted rounded-md overflow-hidden",
           size === "large" ? "aspect-[16/8]" : "aspect-[16/9]",
         ].join(" ")}
       >
-        {/* Fake play overlay (since it’s a video card) */}
         <div className="absolute inset-0 flex items-center justify-center bg-black/15">
           <div className="h-14 w-14 rounded-full bg-white/70" />
         </div>
       </div>
-
-      {/* Content */}
       <div className="py-4 space-y-3">
-        <div className="h-6 w-5/6 bg-muted rounded-lg" /> {/* title */}
+        <div className="h-6 w-5/6 bg-muted rounded-lg" />
         <div className="space-y-2">
           <div className="h-4 w-full bg-muted rounded" />
           <div className="h-4 w-11/12 bg-muted rounded" />
@@ -40,7 +39,6 @@ const VideoCardSkeleton = ({ size = "small" }: { size?: "small" | "large" }) => 
     </div>
   );
 };
-;
 
 const Videos = () => {
   const [page, setPage] = useState(1);
@@ -64,7 +62,6 @@ const Videos = () => {
     page * ITEMS_PER_PAGE
   );
 
-  // Get YouTube embed URL for video playback
   const getYouTubeEmbedUrl = (url: string) => {
     const match = url.match(
       /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/
@@ -72,7 +69,6 @@ const Videos = () => {
     return match ? `https://www.youtube.com/embed/${match[1]}` : url;
   };
 
-  // Get thumbnail from YouTube URL
   const getYouTubeThumbnail = (url: string) => {
     const match = url.match(
       /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/
@@ -84,6 +80,17 @@ const Videos = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Videos"
+        description="Watch our collection of research-driven explainer videos about Zambia's economy, history, and culture."
+        canonical="/videos"
+      />
+      <JsonLd
+        data={createBreadcrumbSchema([
+          { name: "Home", url: "/" },
+          { name: "Videos" },
+        ])}
+      />
       <Header />
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -103,8 +110,6 @@ const Videos = () => {
                 <VideoCardSkeleton key={i} />
               ))}
             </div>
-
-            {/* Pagination skeleton placeholder */}
             <div className="flex items-center justify-center gap-2 opacity-70">
               <div className="h-10 w-10 rounded-xl bg-muted animate-pulse" />
               <div className="h-10 w-24 rounded-xl bg-muted animate-pulse" />
@@ -133,7 +138,6 @@ const Videos = () => {
               ))}
             </div>
 
-            {/* Pagination */}
             {totalPages > 1 && (
               <div className="flex items-center justify-center gap-2">
                 <Button
@@ -174,6 +178,8 @@ const Videos = () => {
           </>
         )}
       </main>
+
+      <Footer />
     </div>
   );
 };

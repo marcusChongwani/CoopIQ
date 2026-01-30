@@ -2,23 +2,22 @@ import { useParams, Navigate, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
+import JsonLd, { createVideoSchema, createBreadcrumbSchema } from "@/components/JsonLd";
 import ArticleCard from "@/components/ArticleCard";
 import ExpandableDescription from "@/components/ExpandableDescription";
 import { Link2, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 
-/** Matches your ArticleCard visual style (thumbnail + title + subtitle) */
 const VideoCardSkeleton = () => {
   return (
     <div className="group block overflow-hidden animate-pulse">
-      {/* Thumbnail */}
       <div className="relative bg-muted rounded-md overflow-hidden aspect-[16/9]">
         <div className="absolute inset-0 flex items-center justify-center bg-black/15">
           <div className="h-14 w-14 rounded-full bg-white/70" />
         </div>
       </div>
-
-      {/* Content */}
       <div className="py-4 space-y-3">
         <div className="h-6 w-5/6 bg-muted rounded-lg" />
         <div className="space-y-2">
@@ -34,50 +33,36 @@ const ArticleSkeleton = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-
       <main>
-        {/* Back Navigation */}
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
             <ArrowLeft className="w-4 h-4" />
             <div className="h-4 w-28 bg-muted rounded animate-pulse" />
           </div>
         </div>
-
-        {/* Hero Video Skeleton */}
         <div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] mb-12 bg-muted animate-pulse" />
-
         <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          {/* Header Skeleton */}
           <div className="mb-6 animate-pulse">
             <div className="flex items-center gap-3 mb-6">
               <div className="h-4 w-24 bg-muted rounded" />
             </div>
-
             <div className="space-y-3 mb-4">
               <div className="h-10 md:h-12 lg:h-14 w-5/6 bg-muted rounded-xl" />
               <div className="h-10 md:h-12 lg:h-14 w-3/5 bg-muted rounded-xl" />
             </div>
-
             <div className="h-6 w-2/3 bg-muted rounded" />
           </div>
-
-          {/* Content Skeleton */}
           <div className="mb-16 animate-pulse space-y-3">
             <div className="h-4 w-full bg-muted rounded" />
             <div className="h-4 w-11/12 bg-muted rounded" />
             <div className="h-4 w-10/12 bg-muted rounded" />
             <div className="h-4 w-8/12 bg-muted rounded" />
           </div>
-
-          {/* Share Skeleton */}
           <div className="mb-12 pb-12 border-b border-border animate-pulse">
             <div className="h-4 w-32 bg-muted rounded mb-4" />
             <div className="h-11 w-full sm:w-56 bg-muted rounded-full" />
           </div>
         </article>
-
-        {/* Related Videos Skeleton (3 cards) */}
         <section className="py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="h-8 w-60 bg-muted rounded-xl animate-pulse mb-8" />
@@ -151,11 +136,35 @@ const Article = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background animate-fade-in">
+    <div className="min-h-screen bg-background flex flex-col">
+      <SEOHead
+        title={video.title}
+        description={video.description || video.subtitle || `Watch ${video.title} on Depths of Zambia`}
+        canonical={`/article/${id}`}
+        type="video.other"
+        image={video.thumbnail || getYouTubeThumbnail(video.youtube_url)}
+        publishedTime={video.created_at}
+        section={video.category}
+      />
+      <JsonLd
+        data={[
+          createVideoSchema({
+            title: video.title,
+            description: video.description || undefined,
+            thumbnail: video.thumbnail || undefined,
+            youtubeUrl: video.youtube_url,
+            createdAt: video.created_at,
+          }),
+          createBreadcrumbSchema([
+            { name: "Home", url: "/" },
+            { name: "Videos", url: "/videos" },
+            { name: video.title },
+          ]),
+        ]}
+      />
       <Header />
 
-      <main>
-        {/* Back Navigation */}
+      <main className="flex-1">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <Link
             to="/videos"
@@ -166,7 +175,6 @@ const Article = () => {
           </Link>
         </div>
 
-        {/* Hero Video */}
         <div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] mb-12">
           <iframe
             src={getYouTubeEmbedUrl(video.youtube_url)}
@@ -178,7 +186,6 @@ const Article = () => {
         </div>
 
         <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          {/* Article Header */}
           <div className="mb-6 animate-slide-up">
             <div className="flex items-center gap-3 mb-6">
               <span className="text-sm text-muted-foreground">
@@ -195,7 +202,6 @@ const Article = () => {
             )}
           </div>
 
-          {/* Article Content */}
           <div className="prose prose-lg max-w-none mb-16 animate-slide-up stagger-2">
             {video.description && (
               <ExpandableDescription 
@@ -206,7 +212,6 @@ const Article = () => {
             )}
           </div>
 
-          {/* Share Buttons */}
           <div className="mb-12 pb-12 border-b border-border">
             <p className="text-sm font-semibold mb-4">Share this video</p>
             <div className="flex items-center gap-3">
@@ -221,7 +226,6 @@ const Article = () => {
           </div>
         </article>
 
-        {/* Related Videos */}
         {(relatedLoading || relatedVideos.length > 0) && (
           <section className="py-16 animate-fade-in">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -263,6 +267,8 @@ const Article = () => {
           </section>
         )}
       </main>
+
+      <Footer />
     </div>
   );
 };

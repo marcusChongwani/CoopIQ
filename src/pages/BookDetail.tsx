@@ -1,6 +1,9 @@
 import { useParams, Navigate, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
+import JsonLd, { createBookSchema, createBreadcrumbSchema } from "@/components/JsonLd";
 import ExpandableDescription from "@/components/ExpandableDescription";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ShoppingCart } from "lucide-react";
@@ -90,10 +93,33 @@ const BookDetail = () => {
   if (error || !book) return <Navigate to="/404" replace />;
 
   return (
-    <div className="bg-background animate-fade-in">
+    <div className="min-h-screen bg-background flex flex-col">
+      <SEOHead
+        title={book.title}
+        description={book.description || `Purchase ${book.title} from Depths of Zambia`}
+        canonical={`/book/${slug}`}
+        type="book"
+        image={book.cover_image || undefined}
+      />
+      <JsonLd
+        data={[
+          createBookSchema({
+            title: book.title,
+            description: book.description || undefined,
+            image: book.cover_image || undefined,
+            price: book.price,
+            slug: book.slug,
+          }),
+          createBreadcrumbSchema([
+            { name: "Home", url: "/" },
+            { name: "Books", url: "/books" },
+            { name: book.title },
+          ]),
+        ]}
+      />
       <Header />
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Back Navigation */}
         <div className="mb-8">
           <Link
@@ -173,6 +199,8 @@ const BookDetail = () => {
           </div>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 };

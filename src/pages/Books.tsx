@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
+import JsonLd, { createBreadcrumbSchema } from "@/components/JsonLd";
 import BookCard from "@/components/BookCard";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,18 +14,13 @@ const ITEMS_PER_PAGE = 6;
 const BookCardSkeleton = () => {
   return (
     <div className="flex sm:flex-row gap-6 bg-background rounded-lg animate-pulse">
-      {/* Cover */}
       <div className="flex-shrink-0 w-40">
         <div className="w-full aspect-[3/4] bg-muted rounded" />
       </div>
-
-      {/* Content */}
       <div className="flex flex-col justify-center gap-3 flex-1">
         <div className="h-7 w-4/5 bg-muted rounded-lg" />
         <div className="h-7 w-3/5 bg-muted rounded-lg" />
-
         <div className="h-4 w-2/3 bg-muted rounded" />
-
         <div className="h-11 w-36 bg-muted rounded-md mt-2" />
       </div>
     </div>
@@ -53,6 +51,17 @@ const Books = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Books"
+        description="Explore our collection of books about Zambia's economy, history, and culture. Digital downloads available."
+        canonical="/books"
+      />
+      <JsonLd
+        data={createBreadcrumbSchema([
+          { name: "Home", url: "/" },
+          { name: "Books" },
+        ])}
+      />
       <Header />
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -73,8 +82,6 @@ const Books = () => {
                 <BookCardSkeleton key={i} />
               ))}
             </div>
-
-            {/* Pagination skeleton placeholder */}
             <div className="flex items-center justify-center gap-2 opacity-70">
               <div className="h-10 w-10 rounded-xl bg-muted animate-pulse" />
               <div className="h-10 w-24 rounded-xl bg-muted animate-pulse" />
@@ -100,7 +107,6 @@ const Books = () => {
               ))}
             </div>
 
-            {/* Pagination */}
             {totalPages > 1 && (
               <div className="flex items-center justify-center gap-2">
                 <Button
@@ -141,6 +147,8 @@ const Books = () => {
           </>
         )}
       </main>
+
+      <Footer />
     </div>
   );
 };
