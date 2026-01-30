@@ -10,11 +10,11 @@ interface ExpandableDescriptionProps {
 
 const ExpandableDescription = ({
   text,
-  collapsedHeight = 120,
+  collapsedHeight = 100,
   className = "",
 }: ExpandableDescriptionProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [needsExpansion, setNeedsExpansion] = useState(false);
+  const [needsExpansion, setNeedsExpansion] = useState(true);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
