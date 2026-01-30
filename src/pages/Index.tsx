@@ -84,7 +84,7 @@ const Index = () => {
             variants={fadeIn}
           >
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Featured Videos</h2>
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Latest Videos</h2>
               <Link
                 to="/videos"
                 className="text-sm border font-medium text-muted-foreground hover:text-accent transition-colors px-4 py-2 rounded-full hover:bg-muted/60"

@@ -194,7 +194,7 @@ const Article = () => {
               </span>
             </div>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
+            <h1 className="text-xl md:text-2xl lg:text-4xl font-bold mb-4 leading-tight">
               {video.title}
             </h1>
 
