@@ -2,6 +2,20 @@ import Header from "@/components/Header";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Megaphone, Heart, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+
+const fadeIn = {
+  hidden: { opacity: 0, y: 8 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" as const } },
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 },
+  },
+};
 
 const HowWeMakeMoney = () => {
   return (
@@ -18,14 +32,19 @@ const HowWeMakeMoney = () => {
         </Link>
 
         {/* Hero Section */}
-        <div className="mb-12">
+        <motion.div 
+          className="mb-12"
+          initial="hidden"
+          animate="visible"
+          variants={fadeIn}
+        >
           <h1 className="text-3xl md:text-4xl font-bold leading-tight mb-4">
             How We Make Money
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed">
             At Depths of Zambia, we focus on context over noise. The goal is simple: help people understand Zambia beyond surface-level takes.
           </p>
-        </div>
+        </motion.div>
 
         {/* Intro */}
         <div className="prose prose-neutral dark:prose-invert mb-12">
@@ -38,9 +57,17 @@ const HowWeMakeMoney = () => {
         </div>
 
         {/* Revenue Streams */}
-        <div className="space-y-8">
+        <motion.div 
+          className="space-y-8"
+          initial="hidden"
+          animate="visible"
+          variants={staggerContainer}
+        >
           {/* Advertising */}
-          <div className="rounded-2xl border border-border bg-card p-6 md:p-8">
+          <motion.div 
+            className="rounded-2xl border border-border bg-card p-6 md:p-8"
+            variants={fadeIn}
+          >
             <div className="flex items-start gap-4">
               <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                 <Megaphone className="w-6 h-6 text-primary" />
@@ -52,10 +79,13 @@ const HowWeMakeMoney = () => {
                 </p>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Donations */}
-          <div className="rounded-2xl border border-border bg-card p-6 md:p-8">
+          <motion.div 
+            className="rounded-2xl border border-border bg-card p-6 md:p-8"
+            variants={fadeIn}
+          >
             <div className="flex items-start gap-4">
               <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                 <Heart className="w-6 h-6 text-primary" />
@@ -72,10 +102,13 @@ const HowWeMakeMoney = () => {
                 </Link>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Ebook Sales */}
-          <div className="rounded-2xl border border-border bg-card p-6 md:p-8">
+          <motion.div 
+            className="rounded-2xl border border-border bg-card p-6 md:p-8"
+            variants={fadeIn}
+          >
             <div className="flex items-start gap-4">
               <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                 <BookOpen className="w-6 h-6 text-primary" />
@@ -92,15 +125,20 @@ const HowWeMakeMoney = () => {
                 </Link>
               </div>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {/* Closing */}
-        <div className="mt-12 pt-8 border-t border-border">
+        <motion.div 
+          className="mt-12 pt-8 border-t border-border"
+          initial="hidden"
+          animate="visible"
+          variants={fadeIn}
+        >
           <p className="text-muted-foreground text-center">
             That's how Depths of Zambia is sustained. Simple, transparent, and focused on the work.
           </p>
-        </div>
+        </motion.div>
       </main>
     </div>
   );

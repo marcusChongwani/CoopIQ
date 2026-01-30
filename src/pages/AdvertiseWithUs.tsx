@@ -2,6 +2,20 @@ import Header from "@/components/Header";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Film, Play, Mic, Users, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+
+const fadeIn = {
+  hidden: { opacity: 0, y: 8 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" as const } },
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08 },
+  },
+};
 
 const AdvertiseWithUs = () => {
   const offerings = [
@@ -41,23 +55,36 @@ const AdvertiseWithUs = () => {
         </Link>
 
         {/* Hero Section */}
-        <div className="mb-12">
+        <motion.div 
+          className="mb-12"
+          initial="hidden"
+          animate="visible"
+          variants={fadeIn}
+        >
           <h1 className="text-3xl md:text-4xl font-bold leading-tight mb-4">
             Advertise With Us
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed">
             Depths of Zambia works with brands and organizations through video-based partnerships built for an engaged, thoughtful audience.
           </p>
-        </div>
+        </motion.div>
 
         {/* Offerings */}
-        <div className="mb-12">
-          <h2 className="text-xl font-semibold mb-6">We offer:</h2>
+        <motion.div 
+          className="mb-12"
+          initial="hidden"
+          animate="visible"
+          variants={staggerContainer}
+        >
+          <motion.h2 className="text-xl font-semibold mb-6" variants={fadeIn}>
+            We offer:
+          </motion.h2>
           <div className="grid gap-4">
             {offerings.map((offering, index) => (
-              <div
+              <motion.div
                 key={index}
                 className="flex items-start gap-4 rounded-xl border border-border bg-card p-5 transition-colors hover:bg-muted/50"
+                variants={fadeIn}
               >
                 <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                   <offering.icon className="w-5 h-5 text-primary" />
@@ -66,20 +93,30 @@ const AdvertiseWithUs = () => {
                   <h3 className="font-medium mb-1">{offering.title}</h3>
                   <p className="text-sm text-muted-foreground">{offering.description}</p>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
 
         {/* Quality Statement */}
-        <div className="rounded-2xl bg-muted/50 p-6 md:p-8 mb-12">
+        <motion.div 
+          className="rounded-2xl bg-muted/50 p-6 md:p-8 mb-12"
+          initial="hidden"
+          animate="visible"
+          variants={fadeIn}
+        >
           <p className="text-muted-foreground leading-relaxed">
             All video content is produced to a high standard and designed to fit naturally within our platform. We keep partnerships selective and aligned with our values, ensuring credibility for both the brand and the audience.
           </p>
-        </div>
+        </motion.div>
 
         {/* CTA */}
-        <div className="rounded-2xl border border-border bg-card p-8 text-center">
+        <motion.div 
+          className="rounded-2xl border border-border bg-card p-8 text-center"
+          initial="hidden"
+          animate="visible"
+          variants={fadeIn}
+        >
           <h2 className="text-xl font-semibold mb-3">
             Interested in working together?
           </h2>
@@ -95,7 +132,7 @@ const AdvertiseWithUs = () => {
               Contact Us
             </Button>
           </Link>
-        </div>
+        </motion.div>
       </main>
     </div>
   );
