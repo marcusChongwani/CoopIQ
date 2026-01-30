@@ -1,27 +1,57 @@
+import { motion } from "framer-motion";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
+import JsonLd, { createBreadcrumbSchema } from "@/components/JsonLd";
+
+const fadeIn = {
+  hidden: { opacity: 0, y: 8 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.25, 0.1, 0.25, 1] } },
+} as const;
 
 const Privacy = () => {
   return (
-    <div className="min-h-screen bg-background animate-fade-in">
+    <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Privacy Policy"
+        description="Learn how Depths of Zambia collects, uses, and protects your personal information."
+        canonical="/privacy"
+        noIndex
+      />
+      <JsonLd
+        data={createBreadcrumbSchema([
+          { name: "Home", url: "/" },
+          { name: "Privacy Policy" },
+        ])}
+      />
       <Header />
       
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Hero Section */}
-        <div className="mb-12 space-y-4">
-          <h1 className="text-4xl md:text-5xl font-bold leading-tight animate-slide-down">
+        <motion.div
+          className="mb-12 space-y-4"
+          initial="hidden"
+          animate="visible"
+          variants={fadeIn}
+        >
+          <h1 className="text-4xl md:text-5xl font-bold leading-tight">
             Privacy Policy
           </h1>
-          <p className="text-muted-foreground animate-slide-up stagger-1">
-            Last updated: March 20, 2025
+          <p className="text-muted-foreground">
+            Last updated: January 2025
           </p>
-        </div>
+        </motion.div>
 
-        <div className="prose prose-lg max-w-none space-y-8">
+        <motion.div
+          className="prose prose-lg max-w-none space-y-8"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+        >
           <section>
             <h2 className="text-2xl font-bold mb-4">Introduction</h2>
             <p className="text-muted-foreground">
-              At Perspective, we take your privacy seriously. This Privacy Policy explains how we collect, 
-              use, disclose, and safeguard your information when you visit our website and subscribe to our newsletter.
+              At Depths of Zambia, we take your privacy seriously. This Privacy Policy explains how we collect, 
+              use, disclose, and safeguard your information when you visit our website and use our services.
             </p>
           </section>
 
@@ -32,13 +62,13 @@ const Privacy = () => {
               We may collect personal information that you voluntarily provide to us when you:
             </p>
             <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-              <li>Subscribe to our newsletter</li>
+              <li>Purchase books or digital content</li>
+              <li>Make donations to support our work</li>
               <li>Contact us through our contact form</li>
-              <li>Comment on our articles</li>
-              <li>Create an account on our website</li>
+              <li>Subscribe to updates or newsletters</li>
             </ul>
             <p className="text-muted-foreground mt-4">
-              This information may include your name, email address, and any other information you choose to provide.
+              This information may include your name, email address, phone number, and payment information.
             </p>
 
             <h3 className="text-xl font-semibold mb-3 mt-6">Automatically Collected Information</h3>
@@ -55,7 +85,8 @@ const Privacy = () => {
               We use the information we collect to:
             </p>
             <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-              <li>Send you our newsletter and marketing communications</li>
+              <li>Process purchases and deliver digital content</li>
+              <li>Process donations and send receipts</li>
               <li>Respond to your comments and questions</li>
               <li>Improve our website and content</li>
               <li>Analyze usage patterns and trends</li>
@@ -64,12 +95,11 @@ const Privacy = () => {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold mb-4">Cookies and Tracking Technologies</h2>
+            <h2 className="text-2xl font-bold mb-4">Payment Processing</h2>
             <p className="text-muted-foreground">
-              We use cookies and similar tracking technologies to track activity on our website and store 
-              certain information. You can instruct your browser to refuse all cookies or to indicate when 
-              a cookie is being sent. However, if you do not accept cookies, you may not be able to use 
-              some portions of our website.
+              We use secure third-party payment processors to handle all transactions. We do not store 
+              your complete payment information on our servers. All payment data is encrypted and 
+              processed in accordance with industry security standards.
             </p>
           </section>
 
@@ -85,31 +115,14 @@ const Privacy = () => {
           <section>
             <h2 className="text-2xl font-bold mb-4">Your Rights</h2>
             <p className="text-muted-foreground mb-4">
-              Depending on your location, you may have certain rights regarding your personal information, including:
+              You have certain rights regarding your personal information, including:
             </p>
             <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
               <li>The right to access your personal information</li>
               <li>The right to rectification of inaccurate information</li>
               <li>The right to erasure of your personal information</li>
               <li>The right to withdraw consent</li>
-              <li>The right to data portability</li>
             </ul>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold mb-4">Third-Party Services</h2>
-            <p className="text-muted-foreground">
-              Our website may contain links to third-party websites. We are not responsible for the privacy 
-              practices of these third-party sites. We encourage you to read their privacy policies.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold mb-4">Children's Privacy</h2>
-            <p className="text-muted-foreground">
-              Our website is not intended for children under the age of 13. We do not knowingly collect 
-              personal information from children under 13.
-            </p>
           </section>
 
           <section>
@@ -123,15 +136,14 @@ const Privacy = () => {
           <section>
             <h2 className="text-2xl font-bold mb-4">Contact Us</h2>
             <p className="text-muted-foreground">
-              If you have any questions about this Privacy Policy, please contact us at:
-            </p>
-            <p className="text-muted-foreground mt-4">
-              Email: privacy@perspective.blog<br />
-              Address: San Francisco, CA
+              If you have any questions about this Privacy Policy, please contact us through our 
+              contact page or reach out via our official channels.
             </p>
           </section>
-        </div>
+        </motion.div>
       </main>
+
+      <Footer />
     </div>
   );
 };

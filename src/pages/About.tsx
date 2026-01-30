@@ -1,5 +1,8 @@
 import { motion } from "framer-motion";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
+import JsonLd, { createBreadcrumbSchema } from "@/components/JsonLd";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 8 },
@@ -9,6 +12,17 @@ const fadeIn = {
 const About = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="About Us"
+        description="Depths of Zambia is an explainer video platform focused on adding context to Zambian stories through research-driven content."
+        canonical="/about"
+      />
+      <JsonLd
+        data={createBreadcrumbSchema([
+          { name: "Home", url: "/" },
+          { name: "About" },
+        ])}
+      />
       <Header />
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -138,6 +152,8 @@ const About = () => {
           </div>
         </motion.section>
       </main>
+
+      <Footer />
     </div>
   );
 };
