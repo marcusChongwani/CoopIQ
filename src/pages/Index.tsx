@@ -159,12 +159,14 @@ const Index = () => {
           </motion.section>
         ) : null}
 
+         {/* Donation Section */}
+         <DonationSection />
+
+
         {/* Mission Section */}
         <MissionSection />
 
-        {/* Donation Section */}
-        <DonationSection />
-
+       
         {/* Newsletter Section */}
         <motion.section
           className="my-20 rounded-[2.5rem] bg-card p-12 md:p-16 text-center"

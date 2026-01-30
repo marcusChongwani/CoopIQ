@@ -6,7 +6,7 @@ import logo from "@/assets/logo.png";
 
 const MissionSection = () => {
   return (
-    <section className="py-12">
+    <section className="">
       <Link
         to="/about"
         className="
@@ -23,16 +23,23 @@ const MissionSection = () => {
             <div className="relative  sm:p-8 h-full flex items-center justify-center">
               <div className="relative w-full max-w-sm">
                 {/* big map card */}
-                <div className="overflow-hidden">
-                  <img
-                    src="https://media.istockphoto.com/id/1618136445/vector/zambia-map-with-waving-flag-isolated-on-white-background.jpg?s=612x612&w=0&k=20&c=1hobogTZebSXWy1DWmoDmkg2RQioe-nDui-tSx_yLP0="
-                    alt="Zambia"
-                    className="w-full aspect-square object-cover"
-                  />
-                </div>
+                <div className="">
+  <img
+    src="https://media.istockphoto.com/id/1618136445/vector/zambia-map-with-waving-flag-isolated-on-white-background.jpg?s=612x612&w=0&k=20&c=1hobogTZebSXWy1DWmoDmkg2RQioe-nDui-tSx_yLP0="
+    alt="Zambia"
+    className="
+      w-full
+      object-contain
+      
+      aspect-square
+      max-h-56
+      sm:max-h-none
+    "
+  />
+</div>
 
                 {/* floating badge */}
-                <div className="absolute -bottom-4 left-1/2 -translate-x-1/2">
+                <div className="absolute -bottom-8 left-1/2 -translate-x-1/2">
                   <div className="inline-flex items-center gap-2 rounded-full bg-background px-4 py-2 border border-border shadow-sm max-w-full">
                     <img
                       src={logo}
@@ -51,7 +58,7 @@ const MissionSection = () => {
           </div>
 
           {/* Right: Copy */}
-          <div className="lg:col-span-7 pt-8 sm:p-8 lg:p-10">
+          <div className="lg:col-span-7 pt-12 sm:p-8 lg:p-10">
             <div className="flex items-center justify-between gap-4">
               <p className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                 Our mission
