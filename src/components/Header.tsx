@@ -178,7 +178,7 @@ const Header = () => {
               <>
                 <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
                   <Link to="/donate">
-                    <Button variant="outline" size="sm" className="rounded-full hidden sm:flex" onClick={handleSignOut}>
+                    <Button variant="outline" size="sm" className="rounded-full sm:hidden" onClick={handleSignOut}>
                       Donate
                     </Button>
                   </Link>
