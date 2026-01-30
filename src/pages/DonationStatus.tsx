@@ -4,16 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { 
-  Loader2, 
-  CheckCircle2, 
-  XCircle, 
-  Smartphone, 
-  ArrowLeft,
-  RefreshCw,
-  Heart,
-  Home
-} from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, Smartphone, ArrowLeft, RefreshCw, Heart, Home } from "lucide-react";
 
 type DonationStatusType = "pending" | "completed" | "failed";
 
@@ -23,7 +14,12 @@ const DonationStatus = () => {
   const verifyAttemptedRef = useRef(false);
 
   // Poll for donation status every 3 seconds
-  const { data: donation, isLoading, refetch, dataUpdatedAt } = useQuery({
+  const {
+    data: donation,
+    isLoading,
+    refetch,
+    dataUpdatedAt,
+  } = useQuery({
     queryKey: ["donation-status", transactionId],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -122,7 +118,7 @@ const DonationStatus = () => {
         <Header />
         <div className="max-w-lg mx-auto px-4 py-16 text-center">
           <Loader2 className="w-8 h-8 animate-spin mx-auto text-muted-foreground mb-4" />
-          <p className="text-sm text-muted-foreground">Loading donation status...</p>
+          <p className="text-sm text-muted-foreground">Please Wait Loading Donation status...</p>
         </div>
       </div>
     );
@@ -138,9 +134,7 @@ const DonationStatus = () => {
             <XCircle className="w-8 h-8 text-red-500" />
           </div>
           <h1 className="text-xl font-semibold mb-2">Donation not found</h1>
-          <p className="text-muted-foreground mb-6">
-            This donation link may be invalid or expired.
-          </p>
+          <p className="text-muted-foreground mb-6">This donation link may be invalid or expired.</p>
           <Button asChild>
             <Link to="/donate">Make a Donation</Link>
           </Button>
@@ -159,12 +153,8 @@ const DonationStatus = () => {
             <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
           </div>
           <h1 className="text-xl font-semibold mb-2">Setting up your donation</h1>
-          <p className="text-sm text-muted-foreground mb-6">
-            Please wait while we prepare your transaction...
-          </p>
-          <p className="text-xs text-muted-foreground">
-            ID: {transactionId}
-          </p>
+          <p className="text-sm text-muted-foreground mb-6">Please wait while we prepare your transaction...</p>
+          <p className="text-xs text-muted-foreground">ID: {transactionId}</p>
         </div>
       </div>
     );
@@ -218,8 +208,8 @@ const DonationStatus = () => {
                   .includes("mtn")
                   ? "MTN MoMo"
                   : String(donation.payment_method || "")
-                      .toLowerCase()
-                      .includes("airtel")
+                        .toLowerCase()
+                        .includes("airtel")
                     ? "Airtel Money"
                     : "Mobile Money"}
               </p>
@@ -231,9 +221,7 @@ const DonationStatus = () => {
             <div className="rounded-xl bg-muted/50 p-4 mb-8 text-left">
               <p className="text-sm font-medium mb-1">Thank you, {donation.donor_name}!</p>
               {donation.donor_message && (
-                <p className="text-sm text-muted-foreground italic">
-                  "{donation.donor_message}"
-                </p>
+                <p className="text-sm text-muted-foreground italic">"{donation.donor_message}"</p>
               )}
             </div>
           )}
@@ -283,9 +271,7 @@ const DonationStatus = () => {
 
           {/* Transaction Info */}
           <div className="mt-8 pt-6 border-t border-border">
-            <p className="text-xs text-muted-foreground">
-              Transaction ID: {transactionId}
-            </p>
+            <p className="text-xs text-muted-foreground">Transaction ID: {transactionId}</p>
           </div>
         </div>
       </main>

@@ -4,15 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { 
-  Loader2, 
-  CheckCircle2, 
-  XCircle, 
-  Smartphone, 
-  ArrowLeft,
-  RefreshCw,
-  BookOpen
-} from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, Smartphone, ArrowLeft, RefreshCw, BookOpen } from "lucide-react";
 
 type PaymentStatusType = "pending" | "completed" | "failed";
 
@@ -23,7 +15,12 @@ const PaymentStatus = () => {
   const verifyAttemptedRef = useRef(false);
 
   // Poll for purchase status every 3 seconds
-  const { data: purchase, isLoading, refetch, dataUpdatedAt } = useQuery({
+  const {
+    data: purchase,
+    isLoading,
+    refetch,
+    dataUpdatedAt,
+  } = useQuery({
     queryKey: ["payment-status", transactionId],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -129,7 +126,7 @@ const PaymentStatus = () => {
         <Header />
         <div className="max-w-lg mx-auto px-4 py-16 text-center">
           <Loader2 className="w-8 h-8 animate-spin mx-auto text-muted-foreground mb-4" />
-          <p className="text-sm text-muted-foreground">Loading payment status...</p>
+          <p className="text-sm text-muted-foreground">Please Wait Loading payment status...</p>
         </div>
       </div>
     );
@@ -145,9 +142,7 @@ const PaymentStatus = () => {
             <XCircle className="w-8 h-8 text-red-500" />
           </div>
           <h1 className="text-xl font-semibold mb-2">Payment not found</h1>
-          <p className="text-muted-foreground mb-6">
-            This payment link may be invalid or expired.
-          </p>
+          <p className="text-muted-foreground mb-6">This payment link may be invalid or expired.</p>
           <Button asChild>
             <Link to="/books">Browse Books</Link>
           </Button>
@@ -166,12 +161,8 @@ const PaymentStatus = () => {
             <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
           </div>
           <h1 className="text-xl font-semibold mb-2">Setting up your payment</h1>
-          <p className="text-sm text-muted-foreground mb-6">
-            Please wait while we prepare your transaction...
-          </p>
-          <p className="text-xs text-muted-foreground">
-            ID: {transactionId}
-          </p>
+          <p className="text-sm text-muted-foreground mb-6">Please wait while we prepare your transaction...</p>
+          <p className="text-xs text-muted-foreground">ID: {transactionId}</p>
         </div>
       </div>
     );
@@ -229,8 +220,8 @@ const PaymentStatus = () => {
                   .includes("mtn")
                   ? "MTN MoMo"
                   : String(purchase.payment_method || "")
-                      .toLowerCase()
-                      .includes("airtel")
+                        .toLowerCase()
+                        .includes("airtel")
                     ? "Airtel Money"
                     : "Mobile Money"}
               </p>
@@ -273,9 +264,7 @@ const PaymentStatus = () => {
 
           {/* Transaction Info */}
           <div className="mt-8 pt-6 border-t border-border">
-            <p className="text-xs text-muted-foreground">
-              Transaction ID: {transactionId}
-            </p>
+            <p className="text-xs text-muted-foreground">Transaction ID: {transactionId}</p>
           </div>
         </div>
       </main>
