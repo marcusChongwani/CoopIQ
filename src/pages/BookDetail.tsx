@@ -170,7 +170,7 @@ const BookDetail = () => {
             <div className="pt-4 relative">
               {/* Floating on mobile screens */}
               <div className="block lg:hidden">
-                <div className="fixed bottom-0 left-0 w-full z-40 px-4 py-4">
+                <div className="fixed bottom-0 bg-white border border-t-2 border-gray-100 left-0 w-full z-40 px-4 py-4">
                   <Link to={`/book/${slug}/payment`}>
                     <Button
                       size="lg"
