@@ -173,7 +173,7 @@ const Index = () => {
             <p className="text-xl text-muted-foreground leading-relaxed">
               On Zambia's economy, history and everyday realities.
             </p>
-            <div className="flex flex-row sm:flex-row items-center justify-start sm:justify-center gap-3 sm:gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-start sm:justify-center gap-3 sm:gap-4">
               <Link to="/videos" className="w-full sm:w-auto">
                 <Button className="rounded-full w-full px-6 sm:px-8 py-6 text-base font-medium">
                   <Play className="w-4 h-4 mr-2" />
