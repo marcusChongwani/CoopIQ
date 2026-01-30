@@ -93,9 +93,9 @@ const Header = () => {
   ];
   const navLinks = isAdmin
     ? adminNavLinks.map(({ to, label }) => ({
-        to,
-        label,
-      }))
+      to,
+      label,
+    }))
     : publicNavLinks;
   return (
     <header className="sticky top-0 z-50 py-2 sm:py-4">
@@ -107,8 +107,15 @@ const Header = () => {
               <img src={logo} alt="Depths of Zambia" className="h-8 sm:h-10 w-auto" />
             </Link>
             {isAdmin && (
-              <Badge variant="secondary" className="hidden sm:inline-flex items-center gap-1 text-xs">
-                <ShieldCheck className="h-3 w-3" />
+              <Badge
+                variant="secondary"
+                className="hidden sm:inline-flex items-center gap-1.5 rounded-full
+              bg-primary/10 text-primary
+              border border-primary/20
+              px-2.5 py-0.5 text-[11px] font-medium
+              backdrop-blur-sm"
+              >
+                <ShieldCheck className="h-3.5 w-3.5" />
                 Admin
               </Badge>
             )}
