@@ -182,7 +182,6 @@ const Header = () => {
                       variant="outline"
                       size="sm"
                       className="bg-primary hover:bg-primary/90 text-primary-foreground  rounded-full sm:hidden"
-                      onClick={handleSignOut}
                     >
                       Donate
                     </Button>
