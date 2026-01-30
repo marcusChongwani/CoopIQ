@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import {
   Menu,
   X,
@@ -124,39 +124,62 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-2">
             {navLinks.map((link) => (
-              <Link
+              <NavLink
                 key={link.to}
                 to={link.to}
-                className="text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all"
+                end={link.to === "/admin"} // <-- IMPORTANT: only exact match for dashboard
+                className={({ isActive }) =>
+                  [
+                    "text-sm font-medium rounded-full px-4 py-2 transition-all hover:bg-muted/60",
+                    isActive ? "bg-muted text-foreground" : "text-muted-foreground",
+                  ].join(" ")
+                }
               >
                 {link.label}
-              </Link>
+              </NavLink>
             ))}
+
+
             {!isAdmin && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all flex items-center gap-1">
+                  <button className="text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all flex items-center gap-1 text-muted-foreground">
                     More
                     <ChevronDown className="h-4 w-4" />
                   </button>
                 </DropdownMenuTrigger>
+
                 <DropdownMenuContent align="end" className="w-48">
                   {moreLinks.map((link) => (
                     <DropdownMenuItem key={link.to} asChild>
-                      <Link to={link.to} className="flex items-center gap-2 cursor-pointer">
+                      <NavLink
+                        to={link.to}
+                        className={({ isActive }) =>
+                          [
+                            "flex items-center gap-2 cursor-pointer w-full",
+                            isActive
+                              ? "font-medium text-foreground"
+                              : "text-muted-foreground",
+                          ].join(" ")
+                        }
+                      >
                         {link.label}
-                      </Link>
+                      </NavLink>
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
+
             {!isAdmin && (
               <Link to="/donate">
-                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full">Donate</Button>
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full">
+                  Donate
+                </Button>
               </Link>
             )}
           </nav>
+
 
           {/* Actions */}
           <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
