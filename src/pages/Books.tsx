@@ -70,8 +70,7 @@ const Books = () => {
             All Books
           </h1>
           <p className="mt-2 text-muted-foreground">
-            Explore our collection of books about Zambia&apos;s economy, history, and
-            culture.
+            Explore our collection of books.
           </p>
         </div>
 
