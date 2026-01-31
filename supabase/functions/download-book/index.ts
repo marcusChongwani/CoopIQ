@@ -51,7 +51,9 @@ Deno.serve(async (req) => {
       });
     }
 
-    const book = purchase.books as { title: string; file_path: string } | null;
+    // Handle both single object and array from join
+    const booksData = purchase.books as unknown;
+    const book = Array.isArray(booksData) ? booksData[0] : booksData as { title: string; file_path: string } | null;
     if (!book?.file_path) {
       return new Response(JSON.stringify({ error: "File path missing on book" }), {
         status: 404,
