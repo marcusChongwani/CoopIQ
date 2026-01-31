@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Youtube, Music } from "lucide-react";
+import { Youtube, Music2 } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -84,7 +84,7 @@ const Footer = () => {
                   aria-label="Follow Depths of Zambia on TikTok"
                   className="text-muted-foreground hover:text-accent transition-colors inline-flex items-center justify-center w-8 h-8 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                 >
-                  <Music className="w-5 h-5" />
+                  <Music2 className="w-5 h-5" />
                 </a>
               </li>
               <li>
