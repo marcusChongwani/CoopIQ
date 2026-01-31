@@ -27,7 +27,7 @@ const IntroSection = () => {
           variant="outline"
           className="rounded-md px-6 w-full sm:w-auto sm:px-8 py-6 text-base font-medium"
         >
-          <Link to="/books">Explore Books</Link>
+          <Link to="/books">Explore E-books</Link>
         </Button>
       </div>
     </section>
