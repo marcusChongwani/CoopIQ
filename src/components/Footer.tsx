@@ -83,7 +83,7 @@ const Footer = () => {
                 className="text-muted-foreground hover:text-accent transition-colors"
                 aria-label="Depths of Zambia on TikTok"
               >
-                <img src="https://static.vecteezy.com/system/resources/thumbnails/042/148/603/small/tiktok-logo-tiktok-social-media-icon-free-png.png" className="h-6 w-6" />
+                <img src="https://static.vecteezy.com/system/resources/thumbnails/042/148/603/small/tiktok-logo-tiktok-social-media-icon-free-png.png" className="h-8 w-8" />
               </a>
 
               <a
