@@ -90,7 +90,7 @@ const Contact = () => {
               rel="noreferrer"
               className="
                 rounded-2xl bg-white shadow-sm text-primary border border-border px-5 py-4
-                hover:bg-primary/80 transition-colors
+                transition-colors
               "
             >
               <div className="flex items-center gap-1">
