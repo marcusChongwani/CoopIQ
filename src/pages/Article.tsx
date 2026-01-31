@@ -176,8 +176,8 @@ const Article = () => {
         </div>
 
         <div className="mb-12">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="relative w-full aspect-video overflow-hidden rounded-xl">
+          <div className="max-w-4xl mx-auto sm:px-6 lg:px-8">
+            <div className="relative w-full aspect-video overflow-hidden sm:rounded-xl">
               <iframe
                 src={getYouTubeEmbedUrl(video.youtube_url)}
                 title={video.title}
