@@ -122,7 +122,7 @@ const Donate = () => {
         email: data.email,
         amount: data.amount,
         currency: "ZMW",
-        channels: ["mobile-money"],
+        channels: ["mobile-money","card"],
         label: "Donation to Depths of Zambia",
         customer: data.donorName ? { firstName: data.donorName } : undefined,
         onSuccess: () => {

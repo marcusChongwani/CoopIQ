@@ -140,7 +140,7 @@ const BookPayment = () => {
         email: data.email,
         amount: data.amount,
         currency: "ZMW",
-        channels: ["mobile-money"],
+        channels: ["mobile-money","card"],
         label: book.title,
         onSuccess: () => {
           console.log("Widget success callback - navigating to status page");
