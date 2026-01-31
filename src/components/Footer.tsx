@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { SiTiktok, SiYoutube } from "react-icons/si";
+import { Youtube, Music } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -72,7 +72,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Follow Us column - new */}
+          {/* Follow Us column - lucide-react icons */}
           <div>
             <h3 className="font-semibold mb-4">Follow Us</h3>
             <ul className="flex items-center space-x-3">
@@ -84,7 +84,7 @@ const Footer = () => {
                   aria-label="Follow Depths of Zambia on TikTok"
                   className="text-muted-foreground hover:text-accent transition-colors inline-flex items-center justify-center w-8 h-8 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                 >
-                  <SiTiktok className="w-5 h-5" />
+                  <Music className="w-5 h-5" />
                 </a>
               </li>
               <li>
@@ -95,7 +95,7 @@ const Footer = () => {
                   aria-label="Subscribe to Depths of Zambia on YouTube"
                   className="text-muted-foreground hover:text-accent transition-colors inline-flex items-center justify-center w-8 h-8 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                 >
-                  <SiYoutube className="w-5 h-5" />
+                  <Youtube className="w-5 h-5" />
                 </a>
               </li>
             </ul>
