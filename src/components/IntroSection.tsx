@@ -6,7 +6,7 @@ const IntroSection = () => {
   return (
     <section className="max-w-3xl mx-auto py-4 animate-fade-in text-left sm:text-center">
       <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight text-foreground mb-6 animate-slide-up">
-        <span className="block sm:hidden">Explaining Zambia beyond the headlines.</span>
+        <span className="block sm:hidden">Zambia, Explained</span>
         <span className="hidden sm:block">Zambia, Explained</span>
       </h1>
 
