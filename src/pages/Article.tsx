@@ -175,15 +175,20 @@ const Article = () => {
           </Link>
         </div>
 
-        <div className="relative w-full aspect-video mb-12">
-          <iframe
-            src={getYouTubeEmbedUrl(video.youtube_url)}
-            title={video.title}
-            className="absolute inset-0 w-full h-full"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
+        <div className="mb-12">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="relative w-full aspect-video overflow-hidden rounded-xl">
+              <iframe
+                src={getYouTubeEmbedUrl(video.youtube_url)}
+                title={video.title}
+                className="absolute inset-0 w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          </div>
         </div>
+
 
 
         <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
