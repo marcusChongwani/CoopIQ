@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
+import { SiTiktok, SiYoutube } from "react-icons/si";
 
 const Footer = () => {
   return (
     <footer className="border-t border-border mt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-8">
           <div>
             <h3 className="font-semibold mb-4">Explore</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
@@ -67,6 +68,35 @@ const Footer = () => {
                 <Link to="/terms" className="hover:text-accent transition-colors">
                   Terms of Service
                 </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Follow Us column - new */}
+          <div>
+            <h3 className="font-semibold mb-4">Follow Us</h3>
+            <ul className="flex items-center space-x-3">
+              <li>
+                <a
+                  href="https://www.tiktok.com/@depthsofzambia"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Follow Depths of Zambia on TikTok"
+                  className="text-muted-foreground hover:text-accent transition-colors inline-flex items-center justify-center w-8 h-8 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                >
+                  <SiTiktok className="w-5 h-5" />
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://youtube.com/@depthsofzambia"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Subscribe to Depths of Zambia on YouTube"
+                  className="text-muted-foreground hover:text-accent transition-colors inline-flex items-center justify-center w-8 h-8 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                >
+                  <SiYoutube className="w-5 h-5" />
+                </a>
               </li>
             </ul>
           </div>
