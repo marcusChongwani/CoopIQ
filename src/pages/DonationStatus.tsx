@@ -1,17 +1,20 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, CheckCircle2, XCircle, Smartphone, ArrowLeft, RefreshCw, Heart, Home } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, Smartphone, ArrowLeft, RefreshCw, Heart, Home, X } from "lucide-react";
 
-type DonationStatusType = "pending" | "completed" | "failed";
+type DonationStatusType = "pending" | "completed" | "failed" | "cancelled";
 
 const DonationStatus = () => {
   const { transactionId } = useParams<{ transactionId: string }>();
+  const [searchParams] = useSearchParams();
   const [pollCount, setPollCount] = useState(0);
   const verifyAttemptedRef = useRef(false);
+  const widgetClosed = searchParams.get("closed") === "true";
+  const [showCancelled, setShowCancelled] = useState(widgetClosed);
 
   // Poll for donation status every 3 seconds
   const {
@@ -82,8 +85,17 @@ const DonationStatus = () => {
       });
   }, [transactionId, donation, refetch]);
 
-  const status = (donation?.status || "pending") as DonationStatusType;
+  // Determine effective status - show cancelled if widget was closed and donation is still pending
+  const dbStatus = (donation?.status || "pending") as DonationStatusType;
+  const status: DonationStatusType = showCancelled && dbStatus === "pending" ? "cancelled" : dbStatus;
   const timedOut = pollCount >= 100;
+
+  // If donation completes while showing cancelled, update to show completed
+  useEffect(() => {
+    if (dbStatus === "completed" || dbStatus === "failed") {
+      setShowCancelled(false);
+    }
+  }, [dbStatus]);
 
   const statusConfig = {
     pending: {
@@ -106,6 +118,13 @@ const DonationStatus = () => {
       description: "The payment could not be completed. Please try again.",
       color: "text-red-500",
       bgColor: "bg-red-500/10",
+    },
+    cancelled: {
+      icon: X,
+      title: "Donation cancelled",
+      description: "You closed the payment window. You can still complete the payment on your phone, or try again.",
+      color: "text-muted-foreground",
+      bgColor: "bg-muted",
     },
   };
 
@@ -244,6 +263,31 @@ const DonationStatus = () => {
                 <RefreshCw className="w-4 h-4" />
                 Check Status
               </Button>
+            </div>
+          )}
+
+          {status === "cancelled" && (
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                If you started the payment on your phone, it may still complete.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowCancelled(false);
+                    verifyAttemptedRef.current = false;
+                    void refetch();
+                  }}
+                  className="gap-2"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  Check Status
+                </Button>
+                <Button asChild>
+                  <Link to="/donate">Try Again</Link>
+                </Button>
+              </div>
             </div>
           )}
 
