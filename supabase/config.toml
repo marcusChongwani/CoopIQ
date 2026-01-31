@@ -20,3 +20,6 @@ verify_jwt = false
 
 [functions.initiate-payment]
 verify_jwt = false
+
+[functions.download-book]
+verify_jwt = false
