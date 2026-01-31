@@ -134,7 +134,7 @@ const BookDetail = () => {
             <img
               src={book.cover_image || "/placeholder.svg"}
               alt={book.title}
-              className="w-full max-w-sm aspect-square  object-cover rounded-2xl"
+              className="w-full max-w-sm aspect-square  object-contain rounded-2xl"
             />
           </div>
 
