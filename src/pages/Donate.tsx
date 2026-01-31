@@ -135,7 +135,7 @@ const Donate = () => {
           console.log("Widget closed");
           setIsProcessing(false);
           toast.info("Checking donation status...");
-          navigate(`/donation-status/${reference}`);
+          navigate(`/donation-status/${reference}?closed=true`);
         },
         onConfirmationPending: () => {
           console.log("Confirmation pending - navigating to status page");

@@ -151,9 +151,9 @@ const BookPayment = () => {
         onClose: () => {
           console.log("Widget closed");
           setIsProcessing(false);
-          // Still navigate to status page - user may have completed payment on phone
+          // Navigate to status page with closed flag - user may have completed payment on phone
           toast.info("Checking payment status...");
-          navigate(`/payment-status/${reference}`);
+          navigate(`/payment-status/${reference}?closed=true`);
         },
         onConfirmationPending: () => {
           console.log("Confirmation pending - navigating to status page");
