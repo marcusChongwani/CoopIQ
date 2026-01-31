@@ -20,14 +20,19 @@ const BookDownload = () => {
     enabled: !!token,
   });
 
-  const handleDownload = () => {
-    if (!token) return;
+ const handleDownload = async () => {
+  const { data, error } = await supabase.storage
+    .from("books")
+    .createSignedUrl("my-book.pdf", 120); // expires in 60s
 
-    const fnUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/download-book?token=${token}`;
-  
-    // use same tab so mobile triggers download properly
-    window.location.href = fnUrl
-  };
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  window.location.href = data.signedUrl;
+};
+
 
   if (isLoading) {
     return (
