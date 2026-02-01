@@ -2,7 +2,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 function safeFilename(name: string) {
@@ -13,11 +14,14 @@ function safeFilename(name: string) {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
 
   try {
     const url = new URL(req.url);
     const token = url.searchParams.get("token");
+
     if (!token) {
       return new Response(JSON.stringify({ error: "Missing token" }), {
         status: 400,
@@ -29,14 +33,15 @@ Deno.serve(async (req) => {
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-    // 1) Validate token + purchase status, get book file_path
+    // Validate token + purchase status, get book file_path
     const { data: purchase, error: purchaseErr } = await supabase
       .from("book_purchases")
-      .select("id, status, download_token, amount, books(title, file_path)")
+      .select("id, status, download_token, amount, download_count, books(title, file_path)")
       .eq("download_token", token)
       .maybeSingle();
 
     if (purchaseErr) throw purchaseErr;
+
     if (!purchase) {
       return new Response(JSON.stringify({ error: "Invalid or expired link" }), {
         status: 404,
@@ -54,6 +59,7 @@ Deno.serve(async (req) => {
     // Handle both single object and array from join
     const booksData = purchase.books as unknown;
     const book = Array.isArray(booksData) ? booksData[0] : booksData as { title: string; file_path: string } | null;
+
     if (!book?.file_path) {
       return new Response(JSON.stringify({ error: "File path missing on book" }), {
         status: 404,
@@ -61,26 +67,34 @@ Deno.serve(async (req) => {
       });
     }
 
-    // 2) Download from Storage (CHANGE BUCKET NAME HERE if yours is different)
-    const BUCKET = "books";
+    // Download from Storage - bucket is "book-files"
+    const BUCKET = "book-files";
+
+    console.log(`Downloading file: ${book.file_path} from bucket: ${BUCKET}`);
 
     const { data: fileBlob, error: dlErr } = await supabase.storage
       .from(BUCKET)
       .download(book.file_path);
 
-    if (dlErr) throw dlErr;
+    if (dlErr) {
+      console.error("Storage download error:", dlErr);
+      throw dlErr;
+    }
+
     if (!fileBlob) throw new Error("No file returned");
 
     const buf = await fileBlob.arrayBuffer();
     const filename = `${safeFilename(book.title)}.pdf`;
 
-    // Optional: increment download count
+    // Increment download count server-side
     await supabase
       .from("book_purchases")
-      .update({ download_count: (purchase as any).download_count ? (purchase as any).download_count + 1 : 1 })
+      .update({ download_count: (purchase.download_count || 0) + 1 })
       .eq("id", purchase.id);
 
-    // 3) Force download
+    console.log(`Serving file ${filename} for purchase ${purchase.id}`);
+
+    // Force download with Content-Disposition: attachment
     return new Response(buf, {
       status: 200,
       headers: {
@@ -91,7 +105,7 @@ Deno.serve(async (req) => {
       },
     });
   } catch (err) {
-    console.error(err);
+    console.error("Download error:", err);
     return new Response(JSON.stringify({ error: "Server error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
