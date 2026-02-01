@@ -6,10 +6,6 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-interface DownloadRequest {
-  token: string;
-}
-
 Deno.serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -22,8 +18,9 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const body: DownloadRequest = await req.json();
-    const { token } = body;
+    // Get token from query string
+    const url = new URL(req.url);
+    const token = url.searchParams.get("token");
 
     if (!token) {
       return new Response(
@@ -32,10 +29,23 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Get purchase by download token
+    // Get purchase by download token - do NOT expose file_path
     const { data: purchase, error: purchaseError } = await supabase
       .from("book_purchases")
-      .select("*, books(*)")
+      .select(`
+        id,
+        amount,
+        download_count,
+        created_at,
+        status,
+        books (
+          id,
+          title,
+          subtitle,
+          cover_image,
+          slug
+        )
+      `)
       .eq("download_token", token)
       .eq("status", "completed")
       .single();
@@ -48,57 +58,33 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Update download count
-    await supabase
-      .from("book_purchases")
-      .update({ download_count: (purchase.download_count || 0) + 1 })
-      .eq("id", purchase.id);
+    // Handle both single object and array from join
+    const booksData = purchase.books as unknown;
+    const book = Array.isArray(booksData) ? booksData[0] : booksData;
 
-    // Get the book
-    const book = purchase.books;
-
-    // Generate signed URL for the book file if it exists in storage
-    let downloadUrl = null;
-    if (book?.file_path) {
-      const { data: signedUrlData, error: signedUrlError } = await supabase.storage
-        .from("book-files")
-        .createSignedUrl(book.file_path, 3600); // 1 hour expiry
-
-      if (!signedUrlError && signedUrlData) {
-        downloadUrl = signedUrlData.signedUrl;
-      }
-    }
-
-    // If no file in storage, provide a placeholder message
-    if (!downloadUrl) {
-      // For demo, we'll return a placeholder URL
-      // In production, you'd ensure all books have uploaded files
-      downloadUrl = `https://example.com/books/${book?.slug || 'sample'}.pdf`;
-    }
-
-    console.log(`Download requested for purchase ${purchase.id}, book: ${book?.title}`);
+    console.log(`Verified download for purchase ${purchase.id}, book: ${book?.title}`);
 
     return new Response(
       JSON.stringify({
         success: true,
-        downloadUrl,
         book: {
           id: book?.id,
           title: book?.title,
           subtitle: book?.subtitle,
           cover_image: book?.cover_image,
+          slug: book?.slug,
         },
         purchase: {
           id: purchase.id,
           amount: purchase.amount,
-          download_count: (purchase.download_count || 0) + 1,
+          download_count: purchase.download_count || 0,
           created_at: purchase.created_at,
         },
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
-    console.error("Download error:", error);
+    console.error("Verify download error:", error);
     return new Response(
       JSON.stringify({ success: false, error: "Internal server error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }

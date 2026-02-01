@@ -217,6 +217,32 @@ const BookPayment = () => {
               </p>
             </div>
 
+            {/* Preset amount buttons */}
+            <div className="mb-6">
+              <p className="text-sm font-medium mb-2">Select amount</p>
+              <div className="grid grid-cols-5 gap-2">
+                {[10, 20, 50, 100, 200].map((amount) => (
+                  <button
+                    key={amount}
+                    type="button"
+                    onClick={() => form.setValue("amount", Math.max(amount, minPrice))}
+                    className={[
+                      "px-3 py-3 text-sm font-medium rounded-xl border transition-colors",
+                      "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                      form.watch("amount") === amount
+                        ? "bg-foreground text-background border-foreground"
+                        : "bg-card hover:bg-muted/50 text-foreground border-border",
+                    ].join(" ")}
+                  >
+                    K{amount}
+                  </button>
+                ))}
+              </div>
+              <p className="mt-2 text-xs text-muted-foreground">
+                Pay what you want (minimum K{minPrice.toFixed(2)})
+              </p>
+            </div>
+
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
                 <FormField
@@ -245,7 +271,7 @@ const BookPayment = () => {
                   name="amount"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm">Amount (ZMW)</FormLabel>
+                      <FormLabel className="text-sm">Custom Amount (ZMW)</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -258,9 +284,6 @@ const BookPayment = () => {
                           }
                         />
                       </FormControl>
-                      <p className="text-xs text-muted-foreground">
-                        Minimum K{minPrice.toFixed(2)}. Optional: pay more to support the author.
-                      </p>
                       <FormMessage />
                     </FormItem>
                   )}

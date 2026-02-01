@@ -8,36 +8,38 @@ import { supabase } from "@/integrations/supabase/client";
 const BookDownload = () => {
   const { token } = useParams<{ token: string }>();
 
+  // useQuery for verification only (JSON response)
   const { data, isLoading, error } = useQuery({
-    queryKey: ["download", token],
+    queryKey: ["verify-download", token],
     queryFn: async () => {
-      const { data, error } = await supabase.functions.invoke("get-book-download", {
-        body: { token },
-      });
-      if (error) throw error;
-      return data;
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/verify-book-download?token=${encodeURIComponent(token || "")}`
+      );
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Verification failed");
+      }
+      
+      return response.json();
     },
     enabled: !!token,
   });
 
-  const handleDownload = async () => {
-    try {
-      const filePath = data?.book?.file_path; // e.g. "75ac8ceb-...pdf"
-      if (!filePath) throw new Error("Missing book file path");
-
-      const { data: signed, error } = await supabase.storage.from("book-files").createSignedUrl(filePath, 120);
-
-      if (error) throw error;
-
-      const a = document.createElement("a");
-      a.href = signed.signedUrl;
-      a.download = `${data?.book?.title || "book"}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    } catch (e) {
-      console.error(e);
-    }
+  // Direct download via edge function URL - browser handles file download
+  const handleDownload = () => {
+    if (!token) return;
+    
+    // Build the download URL with token as query param
+    const downloadUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/download-book?token=${encodeURIComponent(token)}`;
+    
+    // Create an invisible anchor and click it to trigger browser download
+    const a = document.createElement("a");
+    a.href = downloadUrl;
+    a.download = ""; // Let the server set the filename via Content-Disposition
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
   };
 
   if (isLoading) {
@@ -68,7 +70,7 @@ const BookDownload = () => {
     );
   }
 
-  // Error state — minimal, Airbnb-ish card
+  // Error state
   if (error || !data?.success) {
     return (
       <div className="min-h-screen bg-background animate-fade-in">
@@ -120,7 +122,7 @@ const BookDownload = () => {
     );
   }
 
-  // Success state — split layout like the new payment page
+  // Success state
   return (
     <div className="min-h-screen bg-background animate-fade-in">
       <Header />
@@ -149,7 +151,7 @@ const BookDownload = () => {
               <div className="flex flex-col items-start gap-3">
                 <CheckCircle className="w-6 h-6 text-primary mt-0.5" />
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">You’re all set</h1>
+                  <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">You're all set</h1>
                   <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
                     Your payment was successful. Download your book below.
                   </p>
@@ -180,7 +182,7 @@ const BookDownload = () => {
             </div>
           </section>
 
-          {/* Right: sticky book summary (Airbnb-ish) */}
+          {/* Right: sticky book summary */}
           <aside className="lg:col-span-5">
             <div className="lg:sticky lg:top-24 rounded-2xl border border-border bg-card p-5 sm:p-6 shadow-sm">
               <div className="flex gap-4">
@@ -210,7 +212,7 @@ const BookDownload = () => {
                 </div>
 
                 <div className="rounded-xl bg-muted/50 p-3 text-xs text-muted-foreground leading-relaxed">
-                  Keep your link safe. If it expires, email support and we’ll help you out.
+                  Keep your link safe. If it expires, email support and we'll help you out.
                 </div>
               </div>
             </div>
