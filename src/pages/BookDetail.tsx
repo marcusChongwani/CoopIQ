@@ -73,14 +73,14 @@ const BookDetailSkeleton = () => {
 const BookDetail = () => {
   const { slug } = useParams<{ slug: string }>();
 
-  const { data: book, isLoading, error } = useQuery({
+  const {
+    data: book,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["book", slug],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("books")
-        .select("*")
-        .eq("slug", slug)
-        .maybeSingle();
+      const { data, error } = await supabase.from("books").select("*").eq("slug", slug).maybeSingle();
 
       if (error) throw error;
       return data;
@@ -110,11 +110,7 @@ const BookDetail = () => {
             price: book.price,
             slug: book.slug,
           }),
-          createBreadcrumbSchema([
-            { name: "Home", url: "/" },
-            { name: "Books", url: "/books" },
-            { name: book.title },
-          ]),
+          createBreadcrumbSchema([{ name: "Home", url: "/" }, { name: "Books", url: "/books" }, { name: book.title }]),
         ]}
       />
       <Header />
@@ -138,29 +134,20 @@ const BookDetail = () => {
             <img
               src={book.cover_image || "/placeholder.svg"}
               alt={book.title}
-              className="w-full max-w-sm aspect-square  object-cover rounded-2xl"
+              className="w-full max-w-sm aspect-square  object-contain rounded-2xl"
             />
           </div>
 
           {/* Book Details */}
           <div className="space-y-6">
             <div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-3">
-                {book.title}
-              </h1>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-3">{book.title}</h1>
 
-              {book.description && (
-                <ExpandableDescription 
-                  text={book.description} 
-                  collapsedHeight={100}
-                />
-              )}
+              {book.description && <ExpandableDescription text={book.description} collapsedHeight={100} />}
             </div>
 
             <div className="py-4 border-y border-border">
-              <p className="text-2xl font-bold text-primary">
-                K{Number(book.price).toFixed(2)}
-              </p>
+              <p className="text-2xl font-bold text-primary">K{Number(book.price).toFixed(2)}</p>
               <p className="text-sm text-muted-foreground mt-1">
                 Pay what you want (minimum K{Number(book.price).toFixed(2)})
               </p>
@@ -172,10 +159,7 @@ const BookDetail = () => {
               <div className="block lg:hidden">
                 <div className="fixed bottom-0 bg-white border border-t-2 border-gray-100 left-0 w-full z-40 px-4 py-4">
                   <Link to={`/book/${slug}/payment`}>
-                    <Button
-                      size="lg"
-                      className="w-full rounded-full px-8 py-6 text-lg font-medium"
-                    >
+                    <Button size="lg" className="w-full rounded-full px-8 py-6 text-lg font-medium">
                       <ShoppingCart className="w-5 h-5 mr-2" />
                       Buy Now - K{Number(book.price).toFixed(2)}
                     </Button>
@@ -186,10 +170,7 @@ const BookDetail = () => {
               {/* Desktop */}
               <div className="hidden lg:block">
                 <Link to={`/book/${slug}/payment`}>
-                  <Button
-                    size="lg"
-                    className="w-full sm:w-auto rounded-full px-8 py-6 text-lg font-medium"
-                  >
+                  <Button size="lg" className="w-full sm:w-auto rounded-full px-8 py-6 text-lg font-medium">
                     <ShoppingCart className="w-5 h-5 mr-2" />
                     Buy Now - K{Number(book.price).toFixed(2)}
                   </Button>
@@ -199,8 +180,6 @@ const BookDetail = () => {
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 };

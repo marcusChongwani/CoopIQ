@@ -36,7 +36,11 @@ const Books = () => {
       const from = (page - 1) * ITEMS_PER_PAGE;
       const to = from + ITEMS_PER_PAGE - 1;
 
-      const { data: books, error, count } = await supabase
+      const {
+        data: books,
+        error,
+        count,
+      } = await supabase
         .from("books")
         .select("*", { count: "exact" })
         .order("created_at", { ascending: false })
@@ -56,21 +60,15 @@ const Books = () => {
         description="Explore our collection of books about Zambia's economy, history, and culture. Digital downloads available."
         canonical="/books"
       />
-      <JsonLd
-        data={createBreadcrumbSchema([
-          { name: "Home", url: "/" },
-          { name: "Books" },
-        ])}
-      />
+      <JsonLd data={createBreadcrumbSchema([{ name: "Home", url: "/" }, { name: "Books" }])} />
       <Header />
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-            All Books
-          </h1>
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">All Books</h1>
           <p className="mt-2 text-muted-foreground">
-            Explore our collection of books.
+            Explore our e-book collection. Our e-books are "quick reads," which means they can be read in 1 or 2
+            sittings. Small books with big ideas.
           </p>
         </div>
 
@@ -88,9 +86,7 @@ const Books = () => {
             </div>
           </>
         ) : data?.books.length === 0 ? (
-          <div className="text-center py-16 text-muted-foreground">
-            No books available yet. Check back soon!
-          </div>
+          <div className="text-center py-16 text-muted-foreground">No books available yet. Check back soon!</div>
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
