@@ -20,19 +20,25 @@ const BookDownload = () => {
     enabled: !!token,
   });
 
- const handleDownload = async () => {
-  const { data, error } = await supabase.storage
-    .from("books")
-    .createSignedUrl("my-book.pdf", 120); // expires in 60s
+  const handleDownload = async () => {
+    try {
+      const filePath = data?.book?.file_path; // e.g. "75ac8ceb-...pdf"
+      if (!filePath) throw new Error("Missing book file path");
 
-  if (error) {
-    console.error(error);
-    return;
-  }
+      const { data: signed, error } = await supabase.storage.from("book-files").createSignedUrl(filePath, 120);
 
-  window.location.href = data.signedUrl;
-};
+      if (error) throw error;
 
+      const a = document.createElement("a");
+      a.href = signed.signedUrl;
+      a.download = `${data?.book?.title || "book"}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -55,9 +61,7 @@ const BookDownload = () => {
           </div>
 
           <div className="rounded-2xl border border-border bg-card p-6 sm:p-10 shadow-sm text-center">
-            <div className="animate-pulse text-muted-foreground">
-              Verifying your purchase…
-            </div>
+            <div className="animate-pulse text-muted-foreground">Verifying your purchase…</div>
           </div>
         </main>
       </div>
@@ -87,12 +91,10 @@ const BookDownload = () => {
                 <AlertCircle className="w-6 h-6 text-destructive" />
               </div>
               <div className="flex-1">
-                <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">
-                  Download link not found
-                </h1>
+                <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">Download link not found</h1>
                 <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                  This link is invalid or expired. Please check your email for the latest
-                  download link, or contact support.
+                  This link is invalid or expired. Please check your email for the latest download link, or contact
+                  support.
                 </p>
 
                 <div className="mt-6 flex flex-col sm:flex-row gap-3">
@@ -147,9 +149,7 @@ const BookDownload = () => {
               <div className="flex flex-col items-start gap-3">
                 <CheckCircle className="w-6 h-6 text-primary mt-0.5" />
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">
-                    You’re all set
-                  </h1>
+                  <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">You’re all set</h1>
                   <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
                     Your payment was successful. Download your book below.
                   </p>
@@ -157,11 +157,7 @@ const BookDownload = () => {
               </div>
 
               <div className="mt-6">
-                <Button
-                  size="lg"
-                  onClick={handleDownload}
-                  className="w-full h-12 rounded-xl text-base font-medium"
-                >
+                <Button size="lg" onClick={handleDownload} className="w-full h-12 rounded-xl text-base font-medium">
                   <Download className="w-5 h-5 mr-2" />
                   Download PDF
                 </Button>
@@ -179,9 +175,7 @@ const BookDownload = () => {
 
               <div className="mt-6 pt-6 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
                 <span>Download count</span>
-                <span className="font-medium text-foreground">
-                  {data.purchase?.download_count || 0}
-                </span>
+                <span className="font-medium text-foreground">{data.purchase?.download_count || 0}</span>
               </div>
             </div>
           </section>
@@ -200,13 +194,9 @@ const BookDownload = () => {
 
                 <div className="min-w-0">
                   <p className="text-xs text-muted-foreground">Book</p>
-                  <h2 className="font-semibold leading-snug truncate">
-                    {data.book?.title}
-                  </h2>
+                  <h2 className="font-semibold leading-snug truncate">{data.book?.title}</h2>
                   {data.book?.subtitle && (
-                    <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
-                      {data.book.subtitle}
-                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground line-clamp-2">{data.book.subtitle}</p>
                   )}
                 </div>
               </div>
@@ -216,9 +206,7 @@ const BookDownload = () => {
               <div className="space-y-3 text-sm">
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Amount paid</span>
-                  <span className="font-semibold">
-                    K{Number(data.purchase?.amount || 0).toFixed(2)}
-                  </span>
+                  <span className="font-semibold">K{Number(data.purchase?.amount || 0).toFixed(2)}</span>
                 </div>
 
                 <div className="rounded-xl bg-muted/50 p-3 text-xs text-muted-foreground leading-relaxed">
