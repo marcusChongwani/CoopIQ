@@ -1,12 +1,55 @@
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { useState, useMemo } from "react";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
-import { Download, CheckCircle, ArrowLeft, AlertCircle, ShieldCheck } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { Download, CheckCircle, ArrowLeft, AlertCircle, ShieldCheck, ExternalLink, X } from "lucide-react";
+
+// Detect if user is in an in-app browser
+const detectInAppBrowser = (): { isInApp: boolean; browserName: string } => {
+  const ua = navigator.userAgent || navigator.vendor || "";
+  
+  // TikTok
+  if (/TikTok|musical_ly/i.test(ua)) {
+    return { isInApp: true, browserName: "TikTok" };
+  }
+  // Instagram
+  if (/Instagram/i.test(ua)) {
+    return { isInApp: true, browserName: "Instagram" };
+  }
+  // Facebook
+  if (/FBAN|FBAV|FB_IAB/i.test(ua)) {
+    return { isInApp: true, browserName: "Facebook" };
+  }
+  // Twitter/X
+  if (/Twitter/i.test(ua)) {
+    return { isInApp: true, browserName: "Twitter" };
+  }
+  // Snapchat
+  if (/Snapchat/i.test(ua)) {
+    return { isInApp: true, browserName: "Snapchat" };
+  }
+  // LinkedIn
+  if (/LinkedInApp/i.test(ua)) {
+    return { isInApp: true, browserName: "LinkedIn" };
+  }
+  // WeChat
+  if (/MicroMessenger/i.test(ua)) {
+    return { isInApp: true, browserName: "WeChat" };
+  }
+  // Generic WebView detection
+  if (/wv|WebView/i.test(ua)) {
+    return { isInApp: true, browserName: "app" };
+  }
+  
+  return { isInApp: false, browserName: "" };
+};
 
 const BookDownload = () => {
   const { token } = useParams<{ token: string }>();
+  const [showInAppBanner, setShowInAppBanner] = useState(true);
+  
+  const inAppBrowser = useMemo(() => detectInAppBrowser(), []);
 
   // useQuery for verification only (JSON response)
   const { data, isLoading, error } = useQuery({
@@ -30,22 +73,60 @@ const BookDownload = () => {
   const handleDownload = () => {
     if (!token) return;
 
-    // Build the download URL with token as query param
     const downloadUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/download-book?token=${encodeURIComponent(token)}`;
 
-    // Create an invisible anchor and click it to trigger browser download
+    // If in-app browser, open in new tab so user can at least view the PDF
+    if (inAppBrowser.isInApp) {
+      window.open(downloadUrl, "_blank");
+      return;
+    }
+
+    // Normal browser: trigger download via anchor click
     const a = document.createElement("a");
     a.href = downloadUrl;
-    a.download = ""; // Let the server set the filename via Content-Disposition
+    a.download = "";
     document.body.appendChild(a);
     a.click();
     a.remove();
+  };
+
+  // In-app browser banner component
+  const InAppBrowserBanner = () => {
+    if (!inAppBrowser.isInApp || !showInAppBanner) return null;
+    
+    return (
+      <div className="bg-muted/50 border-b border-border">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <div className="flex items-start gap-3">
+            <ExternalLink className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-foreground">
+                You're using {inAppBrowser.browserName}'s built-in browser
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                To download: tap the <span className="font-semibold">⋯</span> or <span className="font-semibold">⋮</span> menu and select{" "}
+                <span className="font-semibold">"Open in Safari"</span> or{" "}
+                <span className="font-semibold">"Open in Chrome"</span>, then click download again.
+              </p>
+            </div>
+            <button 
+              onClick={() => setShowInAppBanner(false)}
+              className="p-1 rounded-md hover:bg-muted transition-colors"
+              aria-label="Dismiss"
+            >
+              <X className="w-4 h-4 text-muted-foreground" />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
+        <InAppBrowserBanner />
         <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex items-center justify-between mb-8">
             <Link
@@ -75,6 +156,7 @@ const BookDownload = () => {
     return (
       <div className="min-h-screen bg-background animate-fade-in">
         <Header />
+        <InAppBrowserBanner />
 
         <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex items-center justify-between mb-8">
@@ -123,9 +205,10 @@ const BookDownload = () => {
   }
 
   // Success state
-  return (
-    <div className="min-h-screen bg-background animate-fade-in">
-      <Header />
+    return (
+      <div className="min-h-screen bg-background animate-fade-in">
+        <Header />
+        <InAppBrowserBanner />
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
         {/* Top bar */}
