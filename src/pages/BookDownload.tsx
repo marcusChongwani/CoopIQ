@@ -108,7 +108,7 @@ const BookDownload = () => {
                   </Link>
 
                   <a
-                    href="mailto:support@depthsofzambia.com"
+                    href="mailto:depthsofzambia@gmail.com"
                     className="inline-flex items-center justify-center h-11 px-4 rounded-xl border border-border bg-card hover:bg-muted/50 text-sm font-medium transition-colors"
                   >
                     Email support
