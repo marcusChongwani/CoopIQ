@@ -13,14 +13,14 @@ const BookDownload = () => {
     queryKey: ["verify-download", token],
     queryFn: async () => {
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/verify-book-download?token=${encodeURIComponent(token || "")}`
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/verify-book-download?token=${encodeURIComponent(token || "")}`,
       );
-      
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.error || "Verification failed");
       }
-      
+
       return response.json();
     },
     enabled: !!token,
@@ -29,10 +29,10 @@ const BookDownload = () => {
   // Direct download via edge function URL - browser handles file download
   const handleDownload = () => {
     if (!token) return;
-    
+
     // Build the download URL with token as query param
     const downloadUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/download-book?token=${encodeURIComponent(token)}`;
-    
+
     // Create an invisible anchor and click it to trigger browser download
     const a = document.createElement("a");
     a.href = downloadUrl;
@@ -167,10 +167,12 @@ const BookDownload = () => {
                 <div className="mt-4 text-xs text-muted-foreground">
                   Having trouble?{" "}
                   <a
-                    href="mailto:support@depthsofzambia.com"
+                    href="https://wa.me/message/GR7WX3OGSIXEF1"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-foreground underline-offset-4 hover:underline"
                   >
-                    support@depthsofzambia.com
+                    Chat with us on WhatsApp
                   </a>
                 </div>
               </div>
