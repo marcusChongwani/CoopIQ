@@ -21,9 +21,22 @@ const MissionSection = () => {
           <div className="lg:col-span-5 relative">
 
             <div className="relative  sm:p-8 h-full flex items-center justify-center">
-              <div className="relative w-full ">
+              <div className="relative w-full max-w-sm">
                 {/* big map card */}
-               
+                <div className="">
+  <img
+    src="https://media.istockphoto.com/id/1618136445/vector/zambia-map-with-waving-flag-isolated-on-white-background.jpg?s=612x612&w=0&k=20&c=1hobogTZebSXWy1DWmoDmkg2RQioe-nDui-tSx_yLP0="
+    alt="Zambia"
+    className="
+      w-full
+      object-contain
+      
+      aspect-square
+      max-h-56
+      sm:max-h-none
+    "
+  />
+</div>
 
                 {/* floating badge */}
                 <div className="absolute -bottom-8 left-1/2 -translate-x-1/2">
