@@ -19,7 +19,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://depthsofzambia.com/sitemap.xml
+Sitemap: https://www.depthsofzambia.com/sitemap.xml
 
 # Disallow admin pages
 Disallow: /admin
