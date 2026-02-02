@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-type JsonLdData = 
+type JsonLdData =
   | OrganizationSchema
   | WebSiteSchema
   | ArticleSchema
@@ -75,6 +75,7 @@ interface BookSchema {
     price: string;
     priceCurrency: string;
     availability: string;
+    url?: string;
   };
 }
 
@@ -92,17 +93,16 @@ interface JsonLdProps {
   data: JsonLdData | JsonLdData[];
 }
 
-const SITE_URL = "https://deepthofzambia.lovable.app";
+/** ✅ Pick ONE and keep it consistent everywhere (canonical, sitemap, redirects). */
+const SITE_URL = "https://www.depthsofzambia.com";
 
 const JsonLd = ({ data }: JsonLdProps) => {
   useEffect(() => {
     const scriptId = "json-ld-script";
-    
+
     // Remove existing script if present
     const existingScript = document.getElementById(scriptId);
-    if (existingScript) {
-      existingScript.remove();
-    }
+    if (existingScript) existingScript.remove();
 
     // Create new script element
     const script = document.createElement("script");
@@ -118,25 +118,32 @@ const JsonLd = ({ data }: JsonLdProps) => {
 
     return () => {
       const scriptToRemove = document.getElementById(scriptId);
-      if (scriptToRemove) {
-        scriptToRemove.remove();
-      }
+      if (scriptToRemove) scriptToRemove.remove();
     };
   }, [data]);
 
   return null;
 };
 
-// Helper functions to create common schemas
+// --- Helpers ---
+
+/** Supports "/path" or full "https://..." */
+const toAbsoluteUrl = (maybeUrl?: string) => {
+  if (!maybeUrl) return undefined;
+  if (maybeUrl.startsWith("http://") || maybeUrl.startsWith("https://")) return maybeUrl;
+  return `${SITE_URL}${maybeUrl.startsWith("/") ? "" : "/"}${maybeUrl}`;
+};
+
 export const createOrganizationSchema = (): OrganizationSchema => ({
   "@type": "Organization",
   name: "Depths of Zambia",
   url: SITE_URL,
-  logo: `${SITE_URL}/logo.png`,
+  // Put logo.png in /public so it lives on your domain
+  logo: `${SITE_URL}/BackgroundEraser_20250320_125313018.png`,
   description: "Research-driven explainer videos breaking down the issues shaping life in Zambia.",
   sameAs: [
     "https://www.youtube.com/@DepthsofZambia",
-    // Add social media links as they become available
+    // Add more as needed
   ],
 });
 
@@ -145,6 +152,12 @@ export const createWebSiteSchema = (): WebSiteSchema => ({
   name: "Depths of Zambia",
   url: SITE_URL,
   description: "Explainer videos focused on understanding Zambian stories, not noise or hype.",
+  // Optional but helpful if you have a search page/feature
+  potentialAction: {
+    "@type": "SearchAction",
+    target: `${SITE_URL}/search?q={search_term_string}`,
+    "query-input": "required name=search_term_string",
+  },
 });
 
 export const createVideoSchema = (video: {
@@ -158,12 +171,17 @@ export const createVideoSchema = (video: {
     /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/
   )?.[1];
 
+  const thumbnailUrl =
+    video.thumbnail ||
+    (videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : undefined);
+
   return {
     "@type": "VideoObject",
     name: video.title,
     description: video.description || video.title,
-    thumbnailUrl: video.thumbnail || (videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : undefined),
+    thumbnailUrl,
     uploadDate: video.createdAt,
+    contentUrl: video.youtubeUrl,
     embedUrl: videoId ? `https://www.youtube.com/embed/${videoId}` : undefined,
   };
 };
@@ -178,7 +196,7 @@ export const createBookSchema = (book: {
   "@type": "Book",
   name: book.title,
   description: book.description || book.title,
-  image: book.image,
+  image: toAbsoluteUrl(book.image) || book.image,
   author: {
     "@type": "Organization",
     name: "Depths of Zambia",
@@ -188,6 +206,7 @@ export const createBookSchema = (book: {
     price: book.price.toString(),
     priceCurrency: "ZMW",
     availability: "https://schema.org/InStock",
+    url: `${SITE_URL}/book/${book.slug}`,
   },
 });
 
@@ -199,7 +218,7 @@ export const createBreadcrumbSchema = (
     "@type": "ListItem",
     position: index + 1,
     name: item.name,
-    item: item.url ? `${SITE_URL}${item.url}` : undefined,
+    item: toAbsoluteUrl(item.url),
   })),
 });
 
