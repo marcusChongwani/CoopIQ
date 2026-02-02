@@ -1,13 +1,16 @@
-import { useParams, Navigate, Link } from "react-router-dom";
+import { useState, useCallback } from "react";
+import { useParams, Navigate, Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import JsonLd, { createBookSchema, createBreadcrumbSchema } from "@/components/JsonLd";
 import ExpandableDescription from "@/components/ExpandableDescription";
+import InAppBrowserModal from "@/components/InAppBrowserModal";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ShoppingCart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { detectInAppBrowser } from "@/lib/detectInAppBrowser";
 
 const SkeletonBlock = ({ className }: { className: string }) => (
   <div className={`animate-pulse rounded-xl bg-muted ${className}`} />
@@ -72,6 +75,9 @@ const BookDetailSkeleton = () => {
 
 const BookDetail = () => {
   const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
+  const [showInAppModal, setShowInAppModal] = useState(false);
+  const [inAppBrowserName, setInAppBrowserName] = useState<string | null>(null);
 
   const {
     data: book,
@@ -87,6 +93,17 @@ const BookDetail = () => {
     },
     enabled: !!slug,
   });
+
+  const handleBuyClick = useCallback(() => {
+    const { isInApp, browserName } = detectInAppBrowser();
+    
+    if (isInApp) {
+      setInAppBrowserName(browserName);
+      setShowInAppModal(true);
+    } else {
+      navigate(`/book/${slug}/payment`);
+    }
+  }, [navigate, slug]);
 
   if (isLoading) return <BookDetailSkeleton />;
 
@@ -157,29 +174,40 @@ const BookDetail = () => {
             <div className="pt-4 relative">
               {/* Floating on mobile screens */}
               <div className="block lg:hidden">
-                <div className="fixed bottom-0 bg-white border border-t-2 border-gray-100 left-0 w-full z-40 px-4 py-4">
-                  <Link to={`/book/${slug}/payment`}>
-                    <Button size="lg" className="w-full rounded-full px-8 py-6 text-lg font-medium">
-                      <ShoppingCart className="w-5 h-5 mr-2" />
-                      Buy Now - K{Number(book.price).toFixed(2)}
-                    </Button>
-                  </Link>
+                <div className="fixed bottom-0 bg-background border-t border-border left-0 w-full z-40 px-4 py-4">
+                  <Button 
+                    size="lg" 
+                    className="w-full rounded-full px-8 py-6 text-lg font-medium"
+                    onClick={handleBuyClick}
+                  >
+                    <ShoppingCart className="w-5 h-5 mr-2" />
+                    Buy Now - K{Number(book.price).toFixed(2)}
+                  </Button>
                 </div>
               </div>
 
               {/* Desktop */}
               <div className="hidden lg:block">
-                <Link to={`/book/${slug}/payment`}>
-                  <Button size="lg" className="w-full sm:w-auto rounded-full px-8 py-6 text-lg font-medium">
-                    <ShoppingCart className="w-5 h-5 mr-2" />
-                    Buy Now - K{Number(book.price).toFixed(2)}
-                  </Button>
-                </Link>
+                <Button 
+                  size="lg" 
+                  className="w-full sm:w-auto rounded-full px-8 py-6 text-lg font-medium"
+                  onClick={handleBuyClick}
+                >
+                  <ShoppingCart className="w-5 h-5 mr-2" />
+                  Buy Now - K{Number(book.price).toFixed(2)}
+                </Button>
               </div>
             </div>
           </div>
         </div>
       </main>
+
+      {/* In-App Browser Modal */}
+      <InAppBrowserModal
+        open={showInAppModal}
+        onClose={() => setShowInAppModal(false)}
+        browserName={inAppBrowserName}
+      />
     </div>
   );
 };
