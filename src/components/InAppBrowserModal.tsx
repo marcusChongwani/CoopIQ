@@ -56,15 +56,6 @@ const InAppBrowserModal = ({ open, onClose, browserName }: InAppBrowserModalProp
             }}
             className="relative w-full max-w-md mx-4 mb-0 sm:mb-0 bg-background rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden"
           >
-            {/* Close button */}
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 z-10 p-2 rounded-full bg-background/80 backdrop-blur-sm hover:bg-muted transition-colors"
-              aria-label="Close"
-            >
-              <X className="w-5 h-5 text-muted-foreground" />
-            </button>
-
             {/* Video container */}
             <div className="relative w-full max-h-[50vh] bg-muted overflow-hidden">
               <video
@@ -79,7 +70,7 @@ const InAppBrowserModal = ({ open, onClose, browserName }: InAppBrowserModalProp
                 controlsList="nofullscreen nodownload noremoteplayback noplaybackrate"
                 preload="auto"
                 className="w-full h-full object-contain pointer-events-none select-none"
-                style={{ WebkitUserSelect: 'none', userSelect: 'none' }}
+                style={{ WebkitUserSelect: "none", userSelect: "none" }}
               >
                 <source src="/videos/open-in-browser-guide.mp4" type="video/mp4" />
                 Your browser does not support the video tag.
