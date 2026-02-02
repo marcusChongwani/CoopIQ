@@ -3,6 +3,11 @@ import { useEffect } from "react";
 interface SEOHeadProps {
   title?: string;
   description?: string;
+  /**
+   * Canonical can be:
+   * - a path like "/videos/123"
+   * - a full URL like "https://www.depthsofzambia.com/videos/123"
+   */
   canonical?: string;
   type?: "website" | "article" | "book" | "video.other";
   image?: string;
@@ -15,11 +20,15 @@ interface SEOHeadProps {
   noIndex?: boolean;
 }
 
+/** ✅ Pick ONE and keep it consistent everywhere (canonical, sitemap, redirects). */
+const SITE_URL = "https://www.depthsofzambia.com";
 const SITE_NAME = "Depths of Zambia";
+
 const DEFAULT_DESCRIPTION =
   "Research-driven explainer videos breaking down the issues shaping life in Zambia — clearly, calmly, and with context.";
-const DEFAULT_IMAGE = "https://deepthofzambia.lovable.app/og-image.png";
-const SITE_URL = "https://deepthofzambia.lovable.app";
+
+/** ✅ Put og-image.png in /public so it's served from your own domain. */
+const DEFAULT_IMAGE = `${SITE_URL}/og-image.png`;
 
 const SEOHead = ({
   title,
@@ -35,20 +44,28 @@ const SEOHead = ({
   tags = [],
   noIndex = false,
 }: SEOHeadProps) => {
-  const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} — Explainer Videos with Context`;
-  const fullCanonical = canonical ? `${SITE_URL}${canonical}` : undefined;
+  const fullTitle = title
+    ? `${title} | ${SITE_NAME}`
+    : `${SITE_NAME} — Explainer Videos with Context`;
+
+  // ✅ Build a safe canonical URL (supports "/path" or full "https://..." input)
+  const fullCanonical = canonical
+    ? canonical.startsWith("http")
+      ? canonical
+      : `${SITE_URL}${canonical.startsWith("/") ? "" : "/"}${canonical}`
+    : undefined;
 
   useEffect(() => {
     // Update document title
     document.title = fullTitle;
 
-    // Helper to set or update meta tags
-    const setMeta = (name: string, content: string, isProperty = false) => {
+    // Helper to set or update meta tags (name= or property=)
+    const setMeta = (key: string, content: string, isProperty = false) => {
       const attr = isProperty ? "property" : "name";
-      let element = document.querySelector(`meta[${attr}="${name}"]`);
+      let element = document.querySelector(`meta[${attr}="${key}"]`);
       if (!element) {
         element = document.createElement("meta");
-        element.setAttribute(attr, name);
+        element.setAttribute(attr, key);
         document.head.appendChild(element);
       }
       element.setAttribute("content", content);
@@ -65,16 +82,39 @@ const SEOHead = ({
       element.setAttribute("href", href);
     };
 
+    // Helper to remove previously injected meta tags by property/name
+    const removeAllMeta = (key: string, isProperty = false) => {
+      const attr = isProperty ? "property" : "name";
+      document
+        .querySelectorAll(`meta[${attr}="${key}"]`)
+        .forEach((el) => el.parentNode?.removeChild(el));
+    };
+
+    // Helper to add duplicate meta tags (needed for article:tag)
+    const addMeta = (key: string, content: string, isProperty = false) => {
+      const attr = isProperty ? "property" : "name";
+      const el = document.createElement("meta");
+      el.setAttribute(attr, key);
+      el.setAttribute("content", content);
+      document.head.appendChild(el);
+    };
+
     // Basic meta tags
     setMeta("description", description);
     setMeta("author", author || SITE_NAME);
 
     // Robots
-    if (noIndex) {
-      setMeta("robots", "noindex, nofollow");
-    } else {
-      setMeta("robots", "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1");
-    }
+    setMeta(
+      "robots",
+      noIndex
+        ? "noindex, nofollow"
+        : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+    );
+
+    // Canonical + OG URL (always set to something stable)
+    const effectiveUrl = fullCanonical || `${SITE_URL}${window.location.pathname}`;
+    setLink("canonical", effectiveUrl);
+    setMeta("og:url", effectiveUrl, true);
 
     // Open Graph
     setMeta("og:title", fullTitle, true);
@@ -84,40 +124,45 @@ const SEOHead = ({
     setMeta("og:image", image, true);
     setMeta("og:image:alt", imageAlt, true);
     setMeta("og:locale", "en_ZM", true);
-    
-    if (fullCanonical) {
-      setMeta("og:url", fullCanonical, true);
-      setLink("canonical", fullCanonical);
-    }
 
     // Twitter Card
     setMeta("twitter:card", "summary_large_image");
     setMeta("twitter:title", fullTitle);
     setMeta("twitter:description", description);
     setMeta("twitter:image", image);
+    setMeta("twitter:url", effectiveUrl);
+
+    // Clean old article meta that can linger between SPA route changes
+    removeAllMeta("article:published_time", true);
+    removeAllMeta("article:modified_time", true);
+    removeAllMeta("article:author", true);
+    removeAllMeta("article:section", true);
+    removeAllMeta("article:tag", true);
 
     // Article-specific meta
-    if (type === "article" && publishedTime) {
-      setMeta("article:published_time", publishedTime, true);
-      if (modifiedTime) {
-        setMeta("article:modified_time", modifiedTime, true);
-      }
-      if (author) {
-        setMeta("article:author", author, true);
-      }
-      if (section) {
-        setMeta("article:section", section, true);
-      }
-      tags.forEach((tag, index) => {
-        setMeta(`article:tag:${index}`, tag, true);
-      });
-    }
+    if (type === "article") {
+      if (publishedTime) addMeta("article:published_time", publishedTime, true);
+      if (modifiedTime) addMeta("article:modified_time", modifiedTime, true);
+      if (author) addMeta("article:author", author, true);
+      if (section) addMeta("article:section", section, true);
 
-    // Cleanup function to remove dynamically added tags on unmount
-    return () => {
-      // We don't remove tags since they get updated on next page
-    };
-  }, [fullTitle, description, type, image, imageAlt, fullCanonical, publishedTime, modifiedTime, author, section, tags, noIndex]);
+      // ✅ Correct: repeat the same property multiple times
+      tags.forEach((tag) => addMeta("article:tag", tag, true));
+    }
+  }, [
+    fullTitle,
+    description,
+    type,
+    image,
+    imageAlt,
+    fullCanonical,
+    publishedTime,
+    modifiedTime,
+    author,
+    section,
+    tags,
+    noIndex,
+  ]);
 
   return null;
 };
