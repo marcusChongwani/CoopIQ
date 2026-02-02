@@ -72,11 +72,14 @@ const InAppBrowserModal = ({ open, onClose, browserName }: InAppBrowserModalProp
                 loop
                 muted
                 playsInline
-                webkit-playsinline="true"
+                disablePictureInPicture
+                disableRemotePlayback
+                x-webkit-airplay="deny"
                 controls={false}
-                controlsList="nofullscreen noremoteplayback"
-                preload="metadata"
-                className="w-full h-full object-contain pointer-events-none"
+                controlsList="nofullscreen nodownload noremoteplayback noplaybackrate"
+                preload="auto"
+                className="w-full h-full object-contain pointer-events-none select-none"
+                style={{ WebkitUserSelect: 'none', userSelect: 'none' }}
               >
                 <source src="/videos/open-in-browser-guide.mp4" type="video/mp4" />
                 Your browser does not support the video tag.
