@@ -66,14 +66,8 @@ const InAppBrowserModal = ({ open, onClose, browserName }: InAppBrowserModalProp
             </button>
 
             {/* Video container */}
-            <div className="relative aspect-[9/16] max-h-[50vh] bg-muted overflow-hidden">
-              <video
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="w-full h-full object-cover"
-              >
+            <div className="relative aspect-[9/16] w-full max-h-[50vh] bg-muted overflow-hidden">
+              <video autoPlay loop muted playsInline className="w-full h-full object-cover">
                 <source src="/videos/open-in-browser-guide.mov" type="video/quicktime" />
                 <source src="/videos/open-in-browser-guide.mov" type="video/mp4" />
                 Your browser does not support the video tag.
@@ -87,19 +81,14 @@ const InAppBrowserModal = ({ open, onClose, browserName }: InAppBrowserModalProp
                   Open in {browserName ? "Safari or Chrome" : "your browser"}
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Payments and downloads may not work properly in{" "}
-                  {browserName ? `${browserName}'s` : "in-app"} browser. Tap the{" "}
-                  <span className="font-medium text-foreground">⋯</span> menu and select{" "}
+                  Payments and downloads may not work properly in {browserName ? `${browserName}'s` : "in-app"} browser.
+                  Tap the <span className="font-medium text-foreground">⋯</span> menu and select{" "}
                   <span className="font-medium text-foreground">"Open in Safari"</span> or{" "}
                   <span className="font-medium text-foreground">"Open in Chrome"</span>.
                 </p>
               </div>
 
-              <Button
-                variant="outline"
-                className="w-full rounded-full"
-                onClick={onClose}
-              >
+              <Button variant="outline" className="w-full rounded-full" onClick={onClose}>
                 Got it
               </Button>
             </div>
