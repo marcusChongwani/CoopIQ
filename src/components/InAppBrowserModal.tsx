@@ -66,10 +66,9 @@ const InAppBrowserModal = ({ open, onClose, browserName }: InAppBrowserModalProp
             </button>
 
             {/* Video container */}
-            <div className="relative  w-full max-h-[50vh] bg-muted overflow-hidden">
+            <div className="relative w-full max-h-[50vh] bg-muted overflow-hidden">
               <video autoPlay loop muted playsInline className="w-full h-full object-contain">
-                <source src="/videos/open-in-browser-guide.mov" type="video/quicktime" />
-                <source src="/videos/open-in-browser-guide.mov" type="video/mp4" />
+                <source src="/videos/open-in-browser-guide.mp4" type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
             </div>
