@@ -28,7 +28,7 @@ const DEFAULT_DESCRIPTION =
   "Research-driven explainer videos breaking down the issues shaping life in Zambia — clearly, calmly, and with context.";
 
 /** ✅ Put og-image.png in /public so it's served from your own domain. */
-const DEFAULT_IMAGE = `${SITE_URL}/og-image.png`;
+const DEFAULT_IMAGE = `${SITE_URL}/BackgroundEraser_20250320_125313018.png`;
 
 const SEOHead = ({
   title,
