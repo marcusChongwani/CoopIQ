@@ -29,9 +29,9 @@ const Contact = () => {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
   };
 
@@ -42,24 +42,12 @@ const Contact = () => {
         description="Get in touch with Depths of Zambia. We'd love to hear from you about collaborations, feedback, or questions."
         canonical="/contact"
       />
-      <JsonLd
-        data={createBreadcrumbSchema([
-          { name: "Home", url: "/" },
-          { name: "Contact" },
-        ])}
-      />
+      <JsonLd data={createBreadcrumbSchema([{ name: "Home", url: "/" }, { name: "Contact" }])} />
       <Header />
-      
+
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <motion.div
-          className="mb-16 text-center space-y-6"
-          initial="hidden"
-          animate="visible"
-          variants={fadeIn}
-        >
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-            Get in Touch
-          </h1>
+        <motion.div className="mb-16 text-center space-y-6" initial="hidden" animate="visible" variants={fadeIn}>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">Get in Touch</h1>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             Have a question, suggestion, or just want to say hello? We'd love to hear from you.
           </p>
@@ -70,87 +58,83 @@ const Contact = () => {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1 }}
-        ><motion.section
-        className="max-w-xl mx-auto"
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.1 }}
-      >
-        <div className="">
-          <h2 className="text-xl font-semibold tracking-tight">Message us</h2>
-          <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-            For the fastest reply, use WhatsApp. If you prefer email, that works too.
-          </p>
-      
-          {/* Quick actions */}
-          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
-           <Link
-              to="https://wa.me/message/GR7WX3OGSIXEF1"
-              target="_blank"
-              rel="noreferrer"
-              className="
+        >
+          <motion.section
+            className="max-w-xl mx-auto"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+          >
+            <div className="">
+              <h2 className="text-xl font-semibold tracking-tight">Message us</h2>
+              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                For the fastest reply, use WhatsApp. If you prefer email, that works too.
+              </p>
+
+              {/* Quick actions */}
+              <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Link
+                  to="https://wa.me/260967000441"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="
                 rounded-2xl bg-white shadow-sm text-primary border border-border px-5 py-4
                 transition-colors
               "
-            >
-              <div className="flex items-center gap-1">
-              <img src="https://img.freepik.com/premium-vector/whatsapp_798572-489.jpg?semt=ais_hybrid&w=740&q=80" className="h-6 w-6"/>
-              <p className="text-sm font-semibold">WhatsApp</p>
-              </div>
-              <p className="text-xs  mt-1">
-                Quickest support & questions
-              </p>
-            </Link>
-      
-            <a
-              href="mailto:depthsofzambia@gmail.com?subject=Hello%20Depths%20of%20Zambia"
-              className="
+                >
+                  <div className="flex items-center gap-1">
+                    <img
+                      src="https://img.freepik.com/premium-vector/whatsapp_798572-489.jpg?semt=ais_hybrid&w=740&q=80"
+                      className="h-6 w-6"
+                    />
+                    <p className="text-sm font-semibold">WhatsApp</p>
+                  </div>
+                  <p className="text-xs  mt-1">Quickest support & questions</p>
+                </Link>
+
+                <a
+                  href="mailto:depthsofzambia@gmail.com?subject=Hello%20Depths%20of%20Zambia"
+                  className="
                 rounded-2xl bg-background border border-border px-5 py-4
                 hover:bg-muted/50 transition-colors
               "
-            >
-              <p className="text-sm font-semibold flex items-center gap-2">
-                <Mail className="w-4 h-4" />
-                Email
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-              depthsofzambia@gmail.com
-              </p>
-            </a>
-          </div>
-      
-          {/* What can we help with */}
-          <div className="mt-8">
-            <p className="text-sm font-semibold mb-3">What can we help with?</p>
-      
-            <div className="flex flex-wrap gap-2">
-              {[
-                "Collaboration",
-                "Suggest a topic",
-                "Report an issue",
-                "Book purchase help",
-                "General feedback",
-              ].map((t) => (
-                <span
-                  key={t}
-                  className="px-4 py-2 rounded-full bg-muted/50 text-sm text-foreground"
                 >
-                  {t}
-                </span>
-              ))}
+                  <p className="text-sm font-semibold flex items-center gap-2">
+                    <Mail className="w-4 h-4" />
+                    Email
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">depthsofzambia@gmail.com</p>
+                </a>
+              </div>
+
+              {/* What can we help with */}
+              <div className="mt-8">
+                <p className="text-sm font-semibold mb-3">What can we help with?</p>
+
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    "Collaboration",
+                    "Suggest a topic",
+                    "Report an issue",
+                    "Book purchase help",
+                    "General feedback",
+                  ].map((t) => (
+                    <span key={t} className="px-4 py-2 rounded-full bg-muted/50 text-sm text-foreground">
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Expectations */}
+              <div className="mt-8 pt-6 border-t border-border">
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Typical response time: <span className="text-foreground font-medium">within 24 hours</span>. Please
+                  don’t share sensitive payment info (PINs or passwords).
+                </p>
+              </div>
             </div>
-          </div>
-      
-          {/* Expectations */}
-          <div className="mt-8 pt-6 border-t border-border">
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Typical response time: <span className="text-foreground font-medium">within 24 hours</span>.
-              Please don’t share sensitive payment info (PINs or passwords).
-            </p>
-          </div>
-        </div>
-      </motion.section>
-      
+          </motion.section>
         </motion.section>
       </main>
 
