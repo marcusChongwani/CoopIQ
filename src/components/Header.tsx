@@ -93,9 +93,9 @@ const Header = () => {
   ];
   const navLinks = isAdmin
     ? adminNavLinks.map(({ to, label }) => ({
-      to,
-      label,
-    }))
+        to,
+        label,
+      }))
     : publicNavLinks;
   return (
     <header className="sticky top-0 z-50 py-2 sm:py-4">
@@ -139,7 +139,6 @@ const Header = () => {
               </NavLink>
             ))}
 
-
             {!isAdmin && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -157,9 +156,7 @@ const Header = () => {
                         className={({ isActive }) =>
                           [
                             "flex items-center gap-2 cursor-pointer w-full",
-                            isActive
-                              ? "font-medium text-foreground"
-                              : "text-muted-foreground",
+                            isActive ? "font-medium text-foreground" : "text-muted-foreground",
                           ].join(" ")
                         }
                       >
@@ -174,12 +171,11 @@ const Header = () => {
             {!isAdmin && (
               <Link to="/donate">
                 <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full">
-                  Donate
+                  Support Us
                 </Button>
               </Link>
             )}
           </nav>
-
 
           {/* Actions */}
           <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
