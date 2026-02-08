@@ -286,7 +286,7 @@ const Header = () => {
                   ))}
                   <Link to="/donate" onClick={() => setIsMenuOpen(false)} className="px-2 pt-2">
                     <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full w-full">
-                      Donate
+                      Support Us
                     </Button>
                   </Link>
                 </>
