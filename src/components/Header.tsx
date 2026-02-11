@@ -209,7 +209,7 @@ const Header = () => {
                       size="sm"
                       className="bg-primary hover:bg-primary/90 text-primary-foreground  rounded-full sm:hidden"
                     >
-                      Support Us
+                      Support us
                     </Button>
                   </Link>
                   {/* Mobile Menu Button for public */}
